@@ -1,18 +1,9 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <vector>
 
 #define MAXCHAR_KOG 10
 #define SCL_BUFFER 50
-
-struct int_ch
-{
-	char b1;
-	char b2;
-	char b3;
-	char b4;
-};
 
 struct texEntry
 {
@@ -88,6 +79,11 @@ inline uint8_t uChar(uint8_t ch)
 void openFile(const char* fileName)
 {
 	SCLHeader header = {};
+
+
+
+
+	//This code has been taken from https://cplusplus.com/reference/cstdio/fread/
 	FILE* pFile;
 	long lSize;
 	char* buffer;
@@ -108,6 +104,10 @@ void openFile(const char* fileName)
 	// copy the file into the buffer:
 	result = fread(buffer, 1, lSize, pFile);
 	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
+	//Until here
+
+
+
 
 	int lv = 0x0;
 	header.Lvl1SCL = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
