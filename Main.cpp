@@ -44,6 +44,26 @@ struct SCLHeader
 	texEntry LTEntry[MAXCHAR_KOG];
 };
 
+
+
+std::string kog_char(int i)
+{
+	switch (i)
+	{
+	case 0: return "VIVIT"; break;
+	case 1: return "Milia"; break;
+	case 2: return "Mei & Mai"; break;
+	case 3: return "Gates"; break;
+	case 4: return "Marie"; break;
+	case 5: return "Erich"; break;
+	case 6: return "Morgan"; break;
+	case 7: return "Muse"; break;
+	case 8: return "Yuuka"; break;
+	case 9: return ""; break;
+	}
+}
+
+
 /*int convCharInt(char c1, char c2, char c3, char c4)
 {
 	char a[4];
@@ -74,6 +94,150 @@ inline uint16_t convCharUInt(uint8_t c1, uint8_t c2) {
 inline uint8_t uChar(uint8_t ch)
 {
 	return ch;
+}
+
+void headerInfo(SCLHeader header)
+{
+
+	// Parte de escritura en la pantalla
+
+	std::cout << std::endl;
+	std::cout << "Cantidad de enemigos SCL Lvl. 1: " << header.Lvl1SCL << std::endl;
+	std::cout << "Cantidad de enemigos SCL Lvl. 2: " << header.Lvl2SCL << std::endl;
+	std::cout << "Cantidad de enemigos SCL Lvl. 3: " << header.Lvl3SCL << std::endl;
+	std::cout << "Cantidad de enemigos SCL Lvl. 4: " << header.Lvl4SCL << std::endl << std::endl;
+
+	printf("Direccion de inicializacion de texturas: 0x%x\n\n", header.TexInit);
+
+	std::string charaName;
+
+	std::cout << "Direcciones de los Ataques de Nivel 1 //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.Lv1Attack[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direcciones de los Ataques de Nivel 2 //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.Lv2Attack[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direcciones de los Bossfights //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.BossAttack[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direcciones de los Combo Attacks //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.ComboAttack[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+
+
+
+	std::cout << "// Direcciones de retrato de ataque de Nivel 1 //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.AnmLv1[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direcciones de retrato de ataque de Nivel 2 //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.AnmLv2[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direcciones de retrato de Jefe //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.AnmBoss[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+	std::cout << "// Direccion de retratos de victoria //" << std::endl;
+	for (int i = 0; i < MAXCHAR_KOG; i++)
+	{
+		charaName = kog_char(i);
+		if (i != 9)
+			printf("%s: 0x%x\n", charaName, header.AnmWin[i]);
+		if (i == 9)
+			std::cout << std::endl;
+	}
+
+
+
+	std::cout << "// S C L   L v l   1 //" << std::endl;
+	for (int i = 0; i < header.Lvl1SCL; i++)
+	{
+		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv1[i]);
+		if (i >= header.Lvl1SCL - 1)
+			std::cout << std::endl;
+	}
+	std::cout << "// S C L   L v l   2 //" << std::endl;
+	for (int i = 0; i < header.Lvl2SCL; i++)
+	{
+		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv2[i]);
+		if (i >= header.Lvl2SCL - 1)
+			std::cout << std::endl;
+	}
+	std::cout << "// S C L   L v l   3 //" << std::endl;
+	for (int i = 0; i < header.Lvl3SCL; i++)
+	{
+		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv3[i]);
+		if (i >= header.Lvl3SCL - 1)
+			std::cout << std::endl;
+	}
+	std::cout << "// S C L   L v l   4 //" << std::endl;
+	for (int i = 0; i < header.Lvl4SCL; i++)
+	{
+		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv4[i]);
+		if (i >= header.Lvl4SCL - 1)
+			std::cout << std::endl;
+	}
+
+	std::cout << "// Texture entries //" << std::endl;
+	for (int j = 0; j < MAXCHAR_KOG; j++)
+	{
+		charaName = kog_char(j);
+		if (j < 9)
+			std::cout << charaName << ": " << std::endl;
+		for (int i = 0; i < header.LTEntry[j].num_tex; i++)
+		{
+			printf("Direccion Tex %d: 0x%x,\n", i + 1, header.LTEntry[j].entryPoint[i]);
+
+			if (i >= header.LTEntry[j].num_tex - 1)
+				std::cout << std::endl;
+		}
+		if (j < 9)
+			std::cout << "Cantidad de direccion de texturas: " << header.LTEntry[j].num_tex << std::endl;
+
+		std::cout << std::endl;
+	}
+
+
 }
 
 void openFile(const char* fileName)
@@ -206,11 +370,13 @@ void openFile(const char* fileName)
 	lv = header.TexInit;
 
 
+	headerInfo(header);
+
 	/*
 	A partir de acá leeré las instrucciones
 	
 	*/
-	int sub_id;
+	unsigned int sub_cnt = 0, sub_id = 0, sub_add[1024], get_subid = 0, lab_cnt = 0, lab_id = 0, lab_add[1024], get_labid = 0;
 	unsigned int address, pop, push, sndId, chId, parId, param, type;
 	unsigned char ar, ind, reg, id, spid, anmid, anmspd;
 	unsigned int x1, x2, y1, y2;
@@ -220,277 +386,765 @@ void openFile(const char* fileName)
 	char vd;
 	char strname[256];
 
-	unsigned int stck[256];
-	unsigned int stckPtr = 0;
+	//unsigned int stck[256];
+	//unsigned int stckPtr = 0;
 
-	for (int i = 0; i < 256; i++)
-	{
-		stck[i] = 0xffffffff;
-	}
+	//for (int i = 0; i < 256; i++)
+	//{
+	//	stck[i] = 0xffffffff;
+	//}
 	//std::string texFile;
 
-
-
-
-
-
-
-// Parte de escritura en la pantalla
-
-	std::cout << std::endl;
-	std::cout << "Cantidad de enemigos SCL Lvl. 1: " << header.Lvl1SCL << std::endl;
-	std::cout << "Cantidad de enemigos SCL Lvl. 2: " << header.Lvl2SCL << std::endl;
-	std::cout << "Cantidad de enemigos SCL Lvl. 3: " << header.Lvl3SCL << std::endl;
-	std::cout << "Cantidad de enemigos SCL Lvl. 4: " << header.Lvl4SCL << std::endl << std::endl;
-
-	printf("Direccion de inicializacion de texturas: 0x%x\n\n", header.TexInit);
-
-	std::string charaName;
-
-	std::cout << "Direcciones de los Ataques de Nivel 1 //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
+	sub_add[sub_cnt] = lv;
+	sub_cnt++;
+	int getpos = lv;
+	while (lv < lSize)
 	{
-		switch (i)
+		switch (uChar(buffer[lv]))
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
-		}
-		if(i != 9)
-			printf("%s: 0x%x\n", charaName, header.Lv1Attack[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-	std::cout << "// Direcciones de los Ataques de Nivel 2 //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+		case 0x30:
+			lv += 0x3; break;
+
+		case 0x31:
+			lv += 0x9; break;
+
+		case 0x40:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			while (buffer[lv + 2 + iter])
+			{
+				iter++;
+			}
+			lv += 0x2 + iter; iter = 0; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.Lv2Attack[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-	std::cout << "// Direcciones de los Bossfights //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+		case 0x41:
+			lv += 0xA; break;
+
+		case 0x42:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			ar = uChar(buffer[lv + 2]);
+			lv += 0x3 + ar; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.BossAttack[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-	std::cout << "// Direcciones de los Combo Attacks //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+
+		case 0x43:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			while (buffer[lv + 2 + iter])
+			{
+				iter++;
+			}
+
+			lv += 0x2 + iter; iter = 0; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.ComboAttack[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-
-
-
-	std::cout << "// Direcciones de retrato de ataque de Nivel 1 //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+		case 0x44:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			while (buffer[lv + 1 + iter])
+			{
+				iter++;
+			}
+			lv += 0x2 + iter; iter = 0; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.AnmLv1[i]);
-		if (i == 9)
-			std::cout << std::endl;
+
+		case 0x50:
+			lv += 0x5; break;
+
+		case 0x51:
+			lv += 0x9;  break;
+
+		case 0x52:
+			lv += 0x5; break;
+
+		case 0x53:
+			lv += 0x2; break;
+
+		case 0x54:
+			lv += 0x3; break;
+
+		case 0x55:
+
+		case 0x56:
+
+		case 0x57:
+			lv += 0x5; break;
+
+		case 0x58:
+			lv += 0x7; break;
+
+		case 0x59:
+			lv += 0x6; break;
+
+		case 0x5b:
+			lv += 0x2;  break;
+
+		case 0x5d:
+			lv += 0x3; break;
+
+		case 0x5e:
+			lv += 0x6; break;
+
+		case 0x5f:
+			lv += 0x6; break;
+
+		case 0x60:
+			lv += 0x2; break;
+
+		case 0x61:
+			lv += 0x5; break;
+
+		case 0x62:
+			lv += 0x7; break;
+
+		case 0x63:
+			lv += 0x6; break;
+
+		case 0x64:
+			lv += 0x3; break;
+
+		case 0x65:
+			lv += 0xc; break;
+
+		case 0x66:
+			lv += 0x6;  break;
+
+		case 0x75:
+			lv += 0x5; break;
+
+		case 0x93:
+			lv += 0x3; break;
+
+		case 0xa0:
+			lv += 0x5; break;
+
+		case 0xa1:
+			lv += 0x2; break;
+
+		case 0xc2:
+			lv += 0x6; break;
+
+		case 0xc3:
+			lv += 0x3; break;
+
+		case 0xc4:
+
+		case 0xc5:
+
+		case 0xc6:
+
+		case 0xc7:
+			lv += 0x5; break;
+
+		case 0xca:
+
+			lv++; break;
+
+		case 0xcc:
+			if (lv < lSize - 1)
+			{
+				sub_add[sub_cnt] = lv + 1;
+				sub_cnt++;
+			}
+			lv++; break;
+
+		case 0xce:
+			lv += 0x5; break;
+
+		default:
+		//	if (lv < lSize - 1)
+				lv++;
+			break;
+		}
 	}
-	std::cout << "// Direcciones de retrato de ataque de Nivel 2 //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
+
+
+	lab_cnt = 0;
+	lab_add[0] = 0;
+
+	for (int j = 0; j < 1024; j++)
 	{
-		switch (i)
+		lab_add[j] = 0xffffffff;
+	}
+
+	lv = getpos;
+
+	while (lv < lSize)
+	{
+		get_subid = 0;
+		get_labid = 0;
+
+		switch (uChar(buffer[lv]))
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
-		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.AnmLv2[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-	std::cout << "// Direcciones de retrato de Jefe //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+		case 0x30:
+			lv += 0x3; break;
+
+		case 0x31:
+			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x9; break;
+
+		case 0x40:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			while (buffer[lv + 2 + iter])
+			{
+				iter++;
+			}
+			lv += 0x2 + iter; iter = 0; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.AnmBoss[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-	std::cout << "// Direccion de retratos de victoria //" << std::endl;
-	for (int i = 0; i < MAXCHAR_KOG; i++)
-	{
-		switch (i)
+		case 0x41:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			lv += 0xA; break;
 		}
-		if (i != 9)
-			printf("%s: 0x%x\n", charaName, header.AnmWin[i]);
-		if (i == 9)
-			std::cout << std::endl;
-	}
-
-
-
-	std::cout << "// S C L   L v l   1 //" << std::endl;
-	for (int i = 0; i < header.Lvl1SCL; i++)
-	{
-		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv1[i]);
-		if (i >= header.Lvl1SCL - 1)
-			std::cout << std::endl;
-	}
-	std::cout << "// S C L   L v l   2 //" << std::endl;
-	for (int i = 0; i < header.Lvl2SCL; i++)
-	{
-		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv2[i]);
-		if (i >= header.Lvl2SCL - 1)
-			std::cout << std::endl;
-	}
-	std::cout << "// S C L   L v l   3 //" << std::endl;
-	for (int i = 0; i < header.Lvl3SCL; i++)
-	{
-		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv3[i]);
-		if (i >= header.Lvl3SCL - 1)
-			std::cout << std::endl;
-	}
-	std::cout << "// S C L   L v l   4 //" << std::endl;
-	for (int i = 0; i < header.Lvl4SCL; i++)
-	{
-		printf("Oleada No. %d: 0x%x\n", i + 1, header.SCL_lv4[i]);
-		if (i >= header.Lvl4SCL - 1)
-			std::cout << std::endl;
-	}
-
-	std::cout << "// Texture entries //" << std::endl;
-	for (int j = 0; j < MAXCHAR_KOG; j++)
-	{
-		switch (j)
+		case 0x42:
 		{
-		case 0: charaName = "VIVIT"; break;
-		case 1: charaName = "Milia"; break;
-		case 2: charaName = "Mei & Mai"; break;
-		case 3: charaName = "Gates"; break;
-		case 4: charaName = "Marie"; break;
-		case 5: charaName = "Erich"; break;
-		case 6: charaName = "Morgan"; break;
-		case 7: charaName = "Muse"; break;
-		case 8: charaName = "Yuuka"; break;
-		case 9: charaName = ""; break;
+			ar = uChar(buffer[lv + 2]);
+			lv += 0x3 + (ar); break;
 		}
-		if (j < 9)
-		std::cout << charaName << ": " << std::endl;
-		for (int i = 0; i < header.LTEntry[j].num_tex; i++)
+
+		case 0x43:
 		{
-			printf("Direccion Tex %d: 0x%x,\n", i + 1, header.LTEntry[j].entryPoint[i]);
-
-			if (i >= header.LTEntry[j].num_tex - 1)
-				std::cout << std::endl;
+			while (buffer[lv + 2 + iter])
+			{
+				iter++;
+			}
+			lv += 0x2 + iter; iter = 0; break;
 		}
-		if(j < 9)
-		std::cout << "Cantidad de direccion de texturas: " << header.LTEntry[j].num_tex << std::endl;
+		case 0x44:
+		{
+			while (buffer[lv + 1 + iter])
+			{
+				iter++;
+			}
+			lv += 0x2 + iter; iter = 0; break;
+		}
 
-		std::cout << std::endl;
+
+		case 0x50:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; get_subid = 0; break;
+
+		case 0x51:
+			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x9; get_subid = 0; break;
+
+		case 0x52:
+
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0x53:
+			lv += 0x2; break;
+
+		case 0x54:
+			lv += 0x3; break;
+
+		case 0x55:
+
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0x56:
+
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0x57:
+			lv += 0x5; break;
+
+		case 0x58:
+			lv += 0x7; break;
+
+		case 0x59:
+			lv += 0x6; break;
+
+		case 0x5b:
+			lv += 0x2;  break;
+
+		case 0x5d:
+			lv += 0x3; break;
+
+		case 0x5e:
+			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x6; break;
+
+		case 0x5f:
+			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x6; break;
+
+		case 0x60:
+			lv += 0x2; break;
+
+		case 0x61:
+			lv += 0x5; break;
+
+		case 0x62:
+			lv += 0x7; break;
+
+		case 0x63:
+			lv += 0x6; break;
+
+		case 0x64:
+			lv += 0x3; break;
+
+		case 0x65:
+			address = convCharInt(buffer[lv + 9], buffer[lv + 10], buffer[lv + 11], buffer[lv + 12]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0xc; break;
+
+		case 0x66:
+			lv += 0x6;  break;
+
+		case 0x75:
+			lv += 0x5; break;
+
+		case 0x93:
+			lv += 0x3; break;
+
+		case 0xa0:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xa1:
+			lv += 0x2; break;
+
+		case 0xc2:
+			lv += 0x6; break;
+
+		case 0xc3:
+			lv += 0x3; break;
+
+		case 0xc4:
+			lv += 0x5; break;
+
+		case 0xc5:
+			//var = uChar(buffer[lv - 1]);
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xc6:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xc7:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xce:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					if (lab_cnt == 0)
+					{
+						lab_add[lab_cnt] = address;
+						lab_cnt++;
+					}
+					else
+					{
+						int it = 0;
+
+						while (address != lab_add[it])
+						{
+							if (lab_add[it] != 0xffffffff)
+								it++;
+							else
+							{
+								lab_add[it] = address;
+								lab_cnt++;
+							}
+						}
+					}
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		default:
+			//if (lv < lSize - 1)
+				lv++;
+			break;
+		}
+
 	}
 
 
+	lv = getpos;
 
-
-
-	sub_id = 0;
 	printf("Sub%d:\n", sub_id);
-	sub_id++;
 	int actPos = lv;
 	while(lv < lSize)
 	{
+		get_subid = 0;
+		get_labid = 0;
+		for (int lb = 0; lb <= lab_cnt; lb++)
+		{
+			if (lv == lab_add[lb])
+			{
+				printf("\nLab\_%d:\n", lb);
+				break;
+			}
+		}
+
 		switch (uChar(buffer[lv]))
 		{
 		case 0x30:
@@ -502,7 +1156,28 @@ void openFile(const char* fileName)
 			x = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			y = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
-			printf("enmCreate{\n	x: %d,\n	y: %d,\n	address: 0x%x,\n}\n\n", x, y, address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+			{
+				printf("enmCreate{\n	x: %d,\n	y: %d,\n	Lab\_%d,\n}\n", x, y, get_labid);
+			}
+			else
+			{
+				printf("enmCreate{\n	x: %d,\n	y: %d,\n	Sub%d,\n}\n", x, y, get_subid);
+			}
 			lv += 0x9; break;
 
 		case 0x40:
@@ -521,7 +1196,7 @@ void openFile(const char* fileName)
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTexture{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n\n", reg, id, strname);
+			printf("loadTexture{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n", reg, id, strname);
 			//delete[iter] strname;
 			lv += 0x2 + iter; iter = 0; break;
 		}
@@ -532,7 +1207,7 @@ void openFile(const char* fileName)
 			y1 = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
 			x2 = convCharUInt(buffer[lv + 6], buffer[lv + 7]);
 			y2 = convCharUInt(buffer[lv + 8], buffer[lv + 9]);
-			printf("sprite%d: { xi: %d, yi: %d, xf: %d, yf: %d }\n\n", spid, x1, y1, x2, y2);
+			printf("sprite%d: { xi: %d, yi: %d, xf: %d, yf: %d }\n", spid, x1, y1, x2, y2);
 			lv += 0xA; break;
 		}
 		case 0x42:
@@ -552,7 +1227,7 @@ void openFile(const char* fileName)
 				else
 				printf("sprite%d }\n", sprites[i]);
 			}
-			printf("}\n\n");
+			printf("}\n");
 			lv += 0x3 + (ar); break;
 		}
 		
@@ -572,7 +1247,7 @@ void openFile(const char* fileName)
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTextureOld{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n\n", reg, id, strname);
+			printf("loadTextureOld{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n", reg, id, strname);
 
 			lv += 0x2 + iter; iter = 0; break;
 		}
@@ -590,60 +1265,146 @@ void openFile(const char* fileName)
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTextureEx{\n    Filename: \"%s\",\n}\n\n", strname);
+			printf("loadTextureEx{\n    Filename: \"%s\",\n}\n", strname);
 			lv += 0x2 + iter; iter = 0; break;
 		}
 
 		case 0x45:
-			printf("anmStop;\n\n");
+			printf("anmStop;\n");
 			lv++; break;
 
 		case 0x50:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("call{ address: 0x%x, }\n\n", address);
-			lv += 0x5; break;
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+
+				printf("call(Lab\_%d);\n", get_labid);
+			else
+			printf("call(Sub%d);\n", get_subid);
+			lv += 0x5; get_subid = 0; break;
 
 		case 0x51:
 			x = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			y = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
-			printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    address: 0x%x,\n}\n\n", x, y, address);
-			lv += 0x9;  break;
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Lab\_%d,\n}\n", x, y, get_labid);
+			else
+			printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Sub%d,\n}\n", x, y, get_subid);
+			lv += 0x9; get_subid = 0; break;
 
 		case 0x52: 
 
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("enmSet{ address: 0x%x, }\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("enmSet{ Lab\_%d, }\n", get_labid);
+			else
+			printf("enmSet{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x53:
 			pop = buffer[lv + 1];
-			printf("return{ pop: %d, }\n\n", pop);
+			printf("return{ pop: %d, }\n", pop);
 			lv += 0x2; break;
 
 		case 0x54:
 			anmid = uChar(buffer[lv + 1]);
 			anmspd = uChar(buffer[lv + 2]);
-			printf("anmSet{\n    anmId: %d,\n    speed: %d,\n}\n\n", anmid, anmspd);
+			printf("anmSet{\n    anmId: %d,\n    speed: %d,\n}\n", anmid, anmspd);
 			lv += 0x3; break;
 
 		case 0x55:
 
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("deathCall{ address: 0x%x, }\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("deathCall{ Lab\_%d, }\n", get_labid);
+			else
+			printf("deathCall{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x56:
 
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("setParentlessObj{ address: 0x%x, }\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("setParentlessObj{ address: Lab\_%d, }\n", get_labid);
+			else
+			printf("setParentlessObj{ address: Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x57:
 
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			t = convCharInt(buffer[lv + 3], buffer[lv + 4]);
-			printf("moveVel{\n    vel: %d,\n    time:%d,\n}\n\n", v0, t);
+			printf("moveVel{\n    vel: %d,\n    time: %d,\n}\n", v0, t);
 			lv += 0x5; break;
 
 		case 0x58:
@@ -651,7 +1412,7 @@ void openFile(const char* fileName)
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			va = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			t = convCharInt(buffer[lv + 5], buffer[lv + 6]);
-			printf("moveVelAccel{\n    velInit: %d,\n    accel: %d,\n    time:%d,\n}\n\n", v0, va, t);
+			printf("moveVelAccel{\n    velInit: %d,\n    accel: %d,\n    time: %d,\n}\n", v0, va, t);
 			lv += 0x7; break;
 
 		case 0x59:
@@ -659,16 +1420,16 @@ void openFile(const char* fileName)
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			vd = buffer[lv + 3];
 			t = convCharInt(buffer[lv + 4], buffer[lv + 5]);
-			printf("moveVelRot{\n    velInit: %d,\n    angVel: %d,\n    time:%d,\n}\n\n", v0, vd, t);
+			printf("moveVelRot{\n    velInit: %d,\n    angVel: %d,\n    time: %d,\n}\n", v0, vd, t);
 			lv += 0x6; break;
 
 		case 0x5a:
-			printf("waitMainObjRet;\n\n");
+			printf("waitMainObjRet;\n");
 			lv++; break;
 
 		case 0x5b:
 			sndId = uChar(buffer[lv + 1]);
-			printf("playSound{ %d, }\n\n", sndId);
+			printf("playSound{ %d, }\n", sndId);
 			lv += 0x2;  break;
 
 		case 0x5c:
@@ -677,37 +1438,73 @@ void openFile(const char* fileName)
 
 		case 0x5d:
 			dmg = convCharInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("madnessGaugeDmg{ %d, }\n\n", dmg);
+			printf("madnessGaugeDmg{ %d, }\n", dmg);
 			lv += 0x3; break;
+
 		case 0x5e:
 			chId = uChar(buffer[lv + 1]);
 			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("childCreate{\n    id: %d,\n    address: 0x%x,\n}\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("childCreate{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
+			else
+			printf("childCreate{\n    id: %d,\n    Sub%d,\n}\n", chId,  get_subid);
 			lv += 0x6; break;
 
 		case 0x5f:
 
 			chId = uChar(buffer[lv + 1]);
 			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("changeChildTask{\n    id: %d,\n    address: 0x%x,\n}\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("changeChildTask{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
+			else
+			printf("changeChildTask{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
 			lv += 0x6; break;
+
 		case 0x60:
 
-			parId = uChar(buffer[lv + 1]);
-			printf("parentId{ id: %d, }\n\n", parId);
+			parId = uChar(buffer[lv - 1]);
+			printf("parentId{ id: %d, }\n", parId);
 			lv += 0x2; break;
 
 		case 0x61:
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			t = convCharUInt(buffer[lv + 3], buffer[lv + 4]);
-			printf("LMovSyncParent{\n    v0: %d,\n    time: %d,\n}\n\n", v0, t);
+			printf("LMovSyncParent{\n    v0: %d,\n    time: %d,\n}\n", v0, t);
 			lv += 0x5; break;
 
 		case 0x62:
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			va = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			t = convCharUInt(buffer[lv + 5], buffer[lv + 6]);
-			printf("AcMovSyncParent{\n    velInit: %d,\n    accel: %d,\n    time: %d,\n}\n\n", v0, va, t);
+			printf("AcMovSyncParent{\n    velInit: %d,\n    accel: %d,\n    time: %d,\n}\n", v0, va, t);
 			lv += 0x7; break;
 
 		case 0x63:
@@ -715,12 +1512,12 @@ void openFile(const char* fileName)
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			vd = buffer[lv + 3];
 			t = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
-			printf("RotMovSyncParent{\n    velInit: %d,\n    angVel: %d,\n    time:%d,\n}\n\n", v0, vd, t);
+			printf("RotMovSyncParent{\n    velInit: %d,\n    angVel: %d,\n    time: %d,\n}\n", v0, vd, t);
 			lv += 0x6; break;
 
 		case 0x64:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("WaitSyncParent{ time: %d, }\n\n", t);
+			printf("WaitSyncParent{ time: %d, }\n", t);
 			lv += 0x3; break;
 
 		case 0x65:
@@ -728,279 +1525,351 @@ void openFile(const char* fileName)
 			y = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			param = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
 			address = convCharInt(buffer[lv + 9], buffer[lv + 10], buffer[lv + 11], buffer[lv + 12]);
-			printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    address: 0x%x,\n}\n\n", x, y, param, address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Lab\_%d,\n}\n", x, y, param, get_labid);
+			else
+			printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Sub%d,\n}\n", x, y, param, get_subid);
 			lv += 0xc; break;
 
 		case 0x66:
 			x = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			y = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			type = uChar(buffer[lv + 5]);
-			printf("effCreate{\n    dx: %d,\n    dy: %d,\n    type: %d,\n}\n\n", x, y, type);
+			printf("effCreate{\n    dx: %d,\n    dy: %d,\n    type: %d,\n}\n", x, y, type);
 			lv += 0x6;  break;
 
 		case 0x70:
-			printf("tamaOn;\n\n");
+			printf("tamaOn;\n");
 			lv++; break;
 
 		case 0x71:
-			printf("laserOn;\n\n");
+			printf("laserOn;\n");
 			lv++; break;
 
 		case 0x72:
-			printf("enmAng;\n\n");
+			printf("enmAng;\n");
 			lv++; break;
 
 		case 0x73:
-			printf("aimAng;\n\n");
+			printf("aimAng;\n");
 			lv++; break;
 
 		case 0x74:
-			printf("laserAccumulated;\n\n");
+			printf("laserAccumulated;\n");
 			lv++; break;
 
 		case 0x75:
 			w = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("laserOpen{ width: %d,}\n\n", w);
+			printf("laserOpen{ width: %d,}\n", w);
 			lv += 0x5; break;
 
-
 		case 0x76:
-			printf("laserClose;\n\n");
+			printf("laserClose;\n");
 			lv++; break;
 
 		case 0x77:
-			printf("hominglOn;\n\n");
+			printf("hominglOn;\n");
 			lv++; break;
 
 		case 0x78:
-			printf("lightningSphere;\n\n");
+			printf("lightningSphere;\n");
 			lv++; break;
 
 		case 0x79:
-			printf("MorganRingOn;\n\n");
+			printf("MorganRingOn;\n");
 			lv++; break;
 
 		case 0x7a:
-			printf("crossOn;\n\n");
+			printf("crossOn;\n");
 			lv++; break;
 
 		case 0x7b:
-			printf("flowerOn;\n\n");
+			printf("flowerOn;\n");
 			lv++; break;
 
 		case 0x7c:
-			printf("GFireOn;\n\n");
+			printf("GFireOn;\n");
 			lv++; break;
 
 		case 0x7d:
-			printf("ionRingOn;\n\n");
+			printf("ionRingOn;\n");
+			lv++; break;
+
+		case 0x90:
+			printf("newMSG{}\n");
 			lv++; break;
 
 		case 0x91:
-			printf("waitKeyMSG;\n\n");
+			printf("waitKeyMSG;\n");
 			lv++; break;
 
 		case 0x92:
-			printf("newLineMSG;\n\n");
+			printf("newLineMSG;\n");
 			lv++; break;
 
 		case 0x93:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("waitMSG{ %d, }\n\n", t);
+			printf("waitMSG{ %d, }\n", t);
 			lv += 0x3; break;
 
 		case 0xa0:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("anmTask{ address: 0x%d, }\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("anmTask{ Lab\_%d, }\n", get_labid);
+			else
+			printf("anmTask{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xa1:
 			type = uChar(buffer[lv + 1]);
-			printf("anmTexMode{ mode: %d, }\n\n", type);
+			printf("anmTexMode{ mode: %d, }\n", type);
 			lv += 0x2; break;
 
 		case 0xc0:
 			var = uChar(buffer[lv - 1]);
-			printf("PUSH var%d;\n\n", var);
+			printf("PUSH var%d;\n", var);
 			lv++; break;
 
 		case 0xc1:
 			var = uChar(buffer[lv - 1]);
-			printf("POP var%d;\n\n", var);
+			printf("POP var%d;\n", var);
 			lv += 0x1; break;
 
 		case 0xc2:
 			var = uChar(buffer[lv + 1]);
 			var_content = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("var%d = %d;\n\n", var, var_content);
+			printf("var%d = %d;\n", var, var_content);
 			lv += 0x6; break;
 
 		case 0xc3:
 			var = uChar(buffer[lv + 1]);
 			var2 = uChar(buffer[lv + 2]);
-			printf("var%d = var%d;\n\n", var, var2);
+			printf("var%d = var%d;\n", var, var2);
 			lv += 0x3; break;
 
 		case 0xc4:
 			var_content = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("PUSH %d;\n\n", var_content);
+			printf("PUSH %d;\n", var_content);
 			lv += 0x5; break;
 
 		case 0xc5:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("POPJmpTrue{\n    POP var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			//var = uChar(buffer[lv - 1]);
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("POPJmpTrue{ Lab\_%d, }\n", get_labid);
+			else
+			printf("POPJmpTrue{ Sub%d, }\n", get_subid);
+			lv += 0x5; break;
 
 		case 0xc6:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("POPJmpFalse{\n    POP var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			//var = uChar(buffer[lv - 1]);
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("POPJmpFalse{ Lab\_%d, }\n", get_labid);
+			else
+			printf("POPJmpFalse{ Sub%d, }\n", get_subid);
+			lv += 0x5; break;
 
 		case 0xc7:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("jmp{ address: 0x%x, }\n\n", address);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("jmp{ Lab\_%d, }\n", get_subid);
+			else
+			printf("jmp{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
+
+		case 0xca:
+
+			lv++; break;
 
 		case 0xcc:
 			printf("endFunc;\n\n");
 			if (lv < lSize - 1)
 			{
-				printf("Sub%d:\n", sub_id);
 				sub_id++;
+				printf("Sub%d:\n\n", sub_id);
 			}
 			lv++; break;
 
 		case 0xcd:
-			var = uChar(buffer[lv + 1]);
-			address = convCharUInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("JmpStackTop{\n    var: %d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("JmpStackTop();\n\n");
+			lv++; break;
+
+		case 0xce:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+			if (get_subid > sub_cnt)
+				printf("loop( Lab\_%d, );\n", get_labid);
+			else
+			printf("loop( Sub%d, );\n", get_subid);
+			lv += 0x5; break;
 
 		case 0xd0:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("PUSH var%d + var%d;\n\n", var, var2);
-			printf("PUSH SUM;\n\n");
+			printf("PUSH SUM;\n");
 			lv++; break;
 
 		case 0xd1:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("PUSH var%d - var%d;\n\n", var, var2);
-			printf("PUSH SUB;\n\n");
+			printf("PUSH SUB;\n");
 			lv++; break;
 
 		case 0xd2:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("PUSH var%d * var%d;\n\n", var, var2);
-			printf("PUSH MUL;\n\n");
+			printf("PUSH MUL;\n");
 			lv++; break;
 
 		case 0xd3:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("PUSH var%d / var%d;\n\n", var, var2);
-			printf("PUSH DIV;\n\n");
+			printf("PUSH DIV;\n");
 			lv++; break;
 
 		case 0xd4:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("PUSH var%d \% var%d;\n\n", var, var2);
-			printf("PUSH MOD;\n\n");
+			printf("PUSH MOD;\n");
 			lv++; break;
 
 		case 0xd5:
-			var = uChar(buffer[lv + 1]);
-			//printf("PUSH -1 * var%d;\n\n", var);
-			printf("PUSH NEG;\n\n");
+			printf("PUSH NEG;\n");
 			lv++; break;
 
 		case 0xd6:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			//printf("sin(var%d, var%d);\n\n", var, var_content);
-			printf("PUSH SIN;");
+			printf("PUSH SIN;\n");
 			lv++; break;
 
 		case 0xd7:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 1]);
-			//printf("cos(var%d, var%d);\n\n", var, var2);
-			printf("PUSH COS;");
+			printf("PUSH COS;\n");
 			lv++; break;
 
 		case 0xd8:
-			//var = uChar(buffer[lv + 1]);
-			printf("PUSH rnd();\n\n", var);
+			printf("PUSH RND;\n");
 			lv++; break;
 
 		case 0xd9:
-			var = uChar(buffer[lv + 1]);
-			var2 = uChar(buffer[lv + 2]);
-			printf("PUSH atan;\n\n", var, var2);
+			printf("PUSH ATAN;\n");
 			lv++; break;
 
 		case 0xda:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpEq{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH EQU;\n");
+			lv++; break;
 
 		case 0xdb:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpNotEq{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH NEQ;\n");
+			lv++; break;
 
 		case 0xdc:
-			var = uChar(buffer[lv + 1]);
-			address = convCharUInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpGreat{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH GREAT;\n");
+			lv++; break;
 
 		case 0xdd:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpLess{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH LESS;\n");
+			lv++; break;
 
 		case 0xde:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpGrEq{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH GEQ;\n");
+			lv++; break;
 
 		case 0xdf:
-			var = uChar(buffer[lv + 1]);
-			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("jmpLsEq{\n    push: var%d,\n    address: 0x%x,\n}\n\n", var, address);
-			lv += 0x6; break;
+			printf("PUSH LEQ;\n");
+			lv++; break;
 
 		case 0xe0:
-			var = uChar(buffer[lv + 1]);
-			sint_cont = convCharInt(buffer[lv + 2], buffer[lv + 3]);
-			//printf("PUSH MAX(var%d, %d);\n\n", var, sint_cont);
-			printf("PUSH MAX();\n\n");
+			printf("PUSH MAX;\n");
 			lv++; break;
 
 		case 0xe1:
-			printf("PUSH MIN();\n\n");
+			printf("PUSH MIN;\n");
 			lv++; break;
 
-		default: lv++; break;
+		default: 
+			if(lv < lSize - 1)
+				lv++;
+			break;
 		}
 #ifdef CLB_DEBUG
-		printf("buffer pos: 0x%x\n\n", lv);
+		//printf("buffer pos: 0x%x\n\n", lv);
 #endif // CLB_DEBUG
-
 	}
 	//delete[] buffer;
 }
-
 #ifdef CLB_DEBUG
 int main()
 {
