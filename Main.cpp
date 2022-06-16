@@ -5,6 +5,7 @@
 #define MAXCHAR_KOG 10
 #define SCL_BUFFER 50
 
+
 struct texEntry
 {
 	int entryPoint[12];
@@ -44,9 +45,12 @@ struct SCLHeader
 	texEntry LTEntry[MAXCHAR_KOG];
 };
 
+char* buffer;
+long lSize;
 
+SCLHeader header = {};
 
-std::string kog_char(int i)
+const char* kog_char(int i)
 {
 	switch (i)
 	{
@@ -59,20 +63,9 @@ std::string kog_char(int i)
 	case 6: return "Morgan"; break;
 	case 7: return "Muse"; break;
 	case 8: return "Yuuka"; break;
-	case 9: return ""; break;
+		//case 9: return ""; break;
 	}
 }
-
-
-/*int convCharInt(char c1, char c2, char c3, char c4)
-{
-	char a[4];
-	a[0] = c1;
-	a[1] = c2;
-	a[2] = c3;
-	a[3] = c4;
-	return *(int*)a;
-}*/
 
 inline int32_t convCharInt(uint8_t c1, uint8_t c2, uint8_t c3, uint8_t c4) {
 	return c4 << 24 | c3 << 16 | c2 << 8 | c1;
@@ -95,8 +88,18 @@ inline uint8_t uChar(uint8_t ch)
 {
 	return ch;
 }
+/*int convCharInt(char c1, char c2, char c3, char c4)
+{
+	char a[4];
+	a[0] = c1;
+	a[1] = c2;
+	a[2] = c3;
+	a[3] = c4;
+	return *(int*)a;
+}*/
 
-void headerInfo(SCLHeader header)
+
+void headerInfo()
 {
 
 	// Parte de escritura en la pantalla
@@ -109,42 +112,42 @@ void headerInfo(SCLHeader header)
 
 	printf("Direccion de inicializacion de texturas: 0x%x\n\n", header.TexInit);
 
-	std::string charaName;
+	const char* charaName = "";
 
 	std::cout << "Direcciones de los Ataques de Nivel 1 //" << std::endl;
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		charaName = kog_char(i);
-		if (i != 9)
+		if (i < 9)
 			printf("%s: 0x%x\n", charaName, header.Lv1Attack[i]);
-		if (i == 9)
+		else if (i >= 9)
 			std::cout << std::endl;
 	}
 	std::cout << "// Direcciones de los Ataques de Nivel 2 //" << std::endl;
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		charaName = kog_char(i);
-		if (i != 9)
+		if (i < 9)
 			printf("%s: 0x%x\n", charaName, header.Lv2Attack[i]);
-		if (i == 9)
+		else if (i >= 9)
 			std::cout << std::endl;
 	}
 	std::cout << "// Direcciones de los Bossfights //" << std::endl;
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		charaName = kog_char(i);
-		if (i != 9)
+		if (i < 9)
 			printf("%s: 0x%x\n", charaName, header.BossAttack[i]);
-		if (i == 9)
+		else if (i >= 9)
 			std::cout << std::endl;
 	}
 	std::cout << "// Direcciones de los Combo Attacks //" << std::endl;
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		charaName = kog_char(i);
-		if (i != 9)
+		if (i < 9)
 			printf("%s: 0x%x\n", charaName, header.ComboAttack[i]);
-		if (i == 9)
+		else if (i >= 9)
 			std::cout << std::endl;
 	}
 
@@ -240,38 +243,8 @@ void headerInfo(SCLHeader header)
 
 }
 
-void openFile(const char* fileName)
+void Decode()
 {
-	SCLHeader header = {};
-
-
-
-
-	//This code has been taken from https://cplusplus.com/reference/cstdio/fread/
-	FILE* pFile;
-	long lSize;
-	char* buffer;
-	size_t result;
-
-	pFile = fopen(fileName, "rb");
-	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
-
-	// obtain file size:
-	fseek(pFile, 0, SEEK_END);
-	lSize = ftell(pFile);
-	rewind(pFile);
-
-	// allocate memory to contain the whole file:
-	buffer = (char*)malloc(sizeof(char) * lSize);
-	if (buffer == NULL) { fputs("Memory error", stderr); exit(2); }
-
-	// copy the file into the buffer:
-	result = fread(buffer, 1, lSize, pFile);
-	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
-	//Until here
-
-
-
 
 	int lv = 0x0;
 	header.Lvl1SCL = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
@@ -370,11 +343,11 @@ void openFile(const char* fileName)
 	lv = header.TexInit;
 
 
-	headerInfo(header);
+	headerInfo();
 
 	/*
 	A partir de acá leeré las instrucciones
-	
+
 	*/
 	unsigned int sub_cnt = 0, sub_id = 0, sub_add[1024], get_subid = 0, lab_cnt = 0, lab_id = 0, lab_add[1024], get_labid = 0;
 	unsigned int address, pop, push, sndId, chId, parId, param, type;
@@ -547,8 +520,8 @@ void openFile(const char* fileName)
 			lv += 0x5; break;
 
 		default:
-		//	if (lv < lSize - 1)
-				lv++;
+			//	if (lv < lSize - 1)
+			lv++;
 			break;
 		}
 	}
@@ -1121,7 +1094,7 @@ void openFile(const char* fileName)
 
 		default:
 			//if (lv < lSize - 1)
-				lv++;
+			lv++;
 			break;
 		}
 
@@ -1132,7 +1105,7 @@ void openFile(const char* fileName)
 
 	printf("Sub%d:\n", sub_id);
 	int actPos = lv;
-	while(lv < lSize)
+	while (lv < lSize)
 	{
 		get_subid = 0;
 		get_labid = 0;
@@ -1190,8 +1163,8 @@ void openFile(const char* fileName)
 			}
 			for (int i = 0; i <= iter; i++)
 			{
-				if(i < iter)
-				strname[i] = buffer[lv + 2 + i];
+				if (i < iter)
+					strname[i] = buffer[lv + 2 + i];
 				if (i >= iter)
 					strname[i] = 0;
 			}
@@ -1222,15 +1195,15 @@ void openFile(const char* fileName)
 			printf("AnimeDef{\n    Index: %d,\n    spr_number: %d,\n    sprites: { ", ind, ar);
 			for (int i = 0; i < ar; i++)
 			{
-				if(i < ar - 1)
-				printf("sprite%d, ", sprites[i]);
+				if (i < ar - 1)
+					printf("sprite%d, ", sprites[i]);
 				else
-				printf("sprite%d }\n", sprites[i]);
+					printf("sprite%d }\n", sprites[i]);
 			}
 			printf("}\n");
 			lv += 0x3 + (ar); break;
 		}
-		
+
 		case 0x43:
 		{
 			reg = uChar(buffer[lv - 1]);
@@ -1293,7 +1266,7 @@ void openFile(const char* fileName)
 
 				printf("call(Lab\_%d);\n", get_labid);
 			else
-			printf("call(Sub%d);\n", get_subid);
+				printf("call(Sub%d);\n", get_subid);
 			lv += 0x5; get_subid = 0; break;
 
 		case 0x51:
@@ -1317,10 +1290,10 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Lab\_%d,\n}\n", x, y, get_labid);
 			else
-			printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Sub%d,\n}\n", x, y, get_subid);
+				printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Sub%d,\n}\n", x, y, get_subid);
 			lv += 0x9; get_subid = 0; break;
 
-		case 0x52: 
+		case 0x52:
 
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
 			while (address != sub_add[get_subid])
@@ -1340,7 +1313,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("enmSet{ Lab\_%d, }\n", get_labid);
 			else
-			printf("enmSet{ Sub%d, }\n", get_subid);
+				printf("enmSet{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x53:
@@ -1374,7 +1347,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("deathCall{ Lab\_%d, }\n", get_labid);
 			else
-			printf("deathCall{ Sub%d, }\n", get_subid);
+				printf("deathCall{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x56:
@@ -1397,7 +1370,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("setParentlessObj{ address: Lab\_%d, }\n", get_labid);
 			else
-			printf("setParentlessObj{ address: Sub%d, }\n", get_subid);
+				printf("setParentlessObj{ address: Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x57:
@@ -1461,7 +1434,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("childCreate{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
 			else
-			printf("childCreate{\n    id: %d,\n    Sub%d,\n}\n", chId,  get_subid);
+				printf("childCreate{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x5f:
@@ -1485,7 +1458,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("changeChildTask{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
 			else
-			printf("changeChildTask{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
+				printf("changeChildTask{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x60:
@@ -1542,7 +1515,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Lab\_%d,\n}\n", x, y, param, get_labid);
 			else
-			printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Sub%d,\n}\n", x, y, param, get_subid);
+				printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Sub%d,\n}\n", x, y, param, get_subid);
 			lv += 0xc; break;
 
 		case 0x66:
@@ -1645,7 +1618,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("anmTask{ Lab\_%d, }\n", get_labid);
 			else
-			printf("anmTask{ Sub%d, }\n", get_subid);
+				printf("anmTask{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xa1:
@@ -1700,7 +1673,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("POPJmpTrue{ Lab\_%d, }\n", get_labid);
 			else
-			printf("POPJmpTrue{ Sub%d, }\n", get_subid);
+				printf("POPJmpTrue{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc6:
@@ -1723,7 +1696,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("POPJmpFalse{ Lab\_%d, }\n", get_labid);
 			else
-			printf("POPJmpFalse{ Sub%d, }\n", get_subid);
+				printf("POPJmpFalse{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc7:
@@ -1745,7 +1718,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("jmp{ Lab\_%d, }\n", get_subid);
 			else
-			printf("jmp{ Sub%d, }\n", get_subid);
+				printf("jmp{ Sub%d, }\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xca:
@@ -1784,7 +1757,7 @@ void openFile(const char* fileName)
 			if (get_subid > sub_cnt)
 				printf("loop( Lab\_%d, );\n", get_labid);
 			else
-			printf("loop( Sub%d, );\n", get_subid);
+				printf("loop( Sub%d, );\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xd0:
@@ -1859,8 +1832,8 @@ void openFile(const char* fileName)
 			printf("PUSH MIN;\n");
 			lv++; break;
 
-		default: 
-			if(lv < lSize - 1)
+		default:
+			if (lv < lSize - 1)
 				lv++;
 			break;
 		}
@@ -1868,8 +1841,37 @@ void openFile(const char* fileName)
 		//printf("buffer pos: 0x%x\n\n", lv);
 #endif // CLB_DEBUG
 	}
-	//delete[] buffer;
 }
+
+void openFile(const char* fileName)
+{
+
+
+
+
+	//This code has been taken from https://cplusplus.com/reference/cstdio/fread/
+	FILE* pFile;
+	size_t result;
+
+	pFile = fopen(fileName, "rb");
+	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
+
+	// obtain file size:
+	fseek(pFile, 0, SEEK_END);
+	lSize = ftell(pFile);
+	rewind(pFile);
+
+	// allocate memory to contain the whole file:
+	buffer = (char*)malloc(sizeof(char) * lSize);
+	if (buffer == NULL) { fputs("Memory error", stderr); exit(2); }
+
+	// copy the file into the buffer:
+	result = fread(buffer, 1, lSize, pFile);
+	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
+	//Until here
+
+}
+
 #ifdef CLB_DEBUG
 int main()
 {
@@ -1878,6 +1880,7 @@ int main()
 	std::cout << "Nombre del archivo: "; std::cin >> filename;
 	const char* fName = filename.c_str();
 	openFile(fName);
+	Decode();
 	//system("pause");
 }
 #endif
@@ -1895,6 +1898,7 @@ int main(int argc, char* argv[])
 	{
 		const char* fName = argv[1];
 		openFile(fName);
+		Decode();
 	}
 }
 #endif // !
