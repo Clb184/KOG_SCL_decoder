@@ -75,6 +75,9 @@ const char* kog_char(int i)
 	}
 }
 
+int lv1Atk_add[MAXCHAR_KOG], lv2Atk_add[MAXCHAR_KOG], BossAtk_add[MAXCHAR_KOG], ComboAtk_add[MAXCHAR_KOG];
+int lv1Port_add[MAXCHAR_KOG], lv2Port_add[MAXCHAR_KOG], BossPort_add[MAXCHAR_KOG], WinPort_add[MAXCHAR_KOG];
+
 inline int32_t convCharInt(uint8_t c1, uint8_t c2, uint8_t c3, uint8_t c4) {
 	return c4 << 24 | c3 << 16 | c2 << 8 | c1;
 }
@@ -251,7 +254,7 @@ void headerInfo()
 
 }
 
-void Decode()
+void getHeaderInfo()
 {
 
 	int lv = 0x0;
@@ -272,21 +275,25 @@ void Decode()
 	{
 		lv += 0x4;
 		header.Lv1Attack[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		lv1Atk_add[i] = header.Lv1Attack[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.Lv2Attack[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		lv2Atk_add[i] = header.Lv2Attack[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.BossAttack[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		BossAtk_add[i] = header.BossAttack[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.ComboAttack[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		ComboAtk_add[i] = header.ComboAttack[i];
 	}
 
 
@@ -295,21 +302,25 @@ void Decode()
 	{
 		lv += 0x4;
 		header.AnmLv1[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		lv1Port_add[i] = header.AnmLv1[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.AnmLv2[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		lv2Port_add[i] = header.AnmLv2[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.AnmBoss[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		BossPort_add[i] = header.AnmBoss[i];
 	}
 	for (int i = 0; i < MAXCHAR_KOG; i++)
 	{
 		lv += 0x4;
 		header.AnmWin[i] = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
+		WinPort_add[i] = header.AnmWin[i];
 	}
 
 
@@ -348,10 +359,15 @@ void Decode()
 		lv += 0x4;
 		header.LTEntry[j].num_tex = convCharInt(buffer[lv + 0], buffer[lv + 1], buffer[lv + 2], buffer[lv + 3]);
 	}
-	lv = header.TexInit;
+}
 
 
-	headerInfo();
+void Decode()
+{
+	getHeaderInfo();
+
+	int lv = header.TexInit;
+	//headerInfo();
 
 	/*
 	A partir de acá leeré las instrucciones
@@ -1114,6 +1130,7 @@ void Decode()
 	char * getName;
 	printf("Sub Sub%d:\n", sub_id);
 	int actPos = lv;
+	int get_comboid = 0;
 	while (lv < lSize)
 	{
 		get_subid = 0;
@@ -1122,7 +1139,15 @@ void Decode()
 		{
 			if (lv == lab_add[lb])
 			{
-				printf("\nLab\_%d:\n", lb);
+				printf("Lab\_%d:\n", lb);
+				break;
+			}
+		}
+		for (int cb = 0; cb < MAXCHAR_KOG - 1; cb++)
+		{
+			if (lv == ComboAtk_add[cb])
+			{
+				printf("Combo\_%d:\n", cb);
 				break;
 			}
 		}
@@ -1133,7 +1158,7 @@ void Decode()
 		bool isIns = (pos == 0x30 || pos == 0x31 || (pos >= 0x40 && pos <= 0x45) ||
 			(pos >= 0x50 && pos <= 0x66) || (pos >= 0x70 && pos <= 0x7d) ||
 			(pos >= 0x90 && pos <= 0x93) || pos == 0xa0 || pos == 0xa1 ||
-			(pos >= 0xc0 && pos <= 0xc6) || (pos >= 0xca && pos <= 0xce) ||
+			(pos >= 0xc0 && pos <= 0xc7) || (pos >= 0xca && pos <= 0xce) ||
 			(pos >= 0xd0 && pos <= 0xe1));
 
 		if (isIns)
@@ -1145,10 +1170,15 @@ void Decode()
 
 			if (ins_nameLength[pos])
 			{
+				if (pos != 0xcc)
+				std::cout << "    ";
+
 				std::cout << ins_name[pos];
 			}
 			else
 			{
+				if (pos != 0xcc)
+					std::cout << "    ";
 				printf("ins_%d", uChar(buffer[lv]));
 			}
 		}
@@ -1158,7 +1188,7 @@ void Decode()
 		{
 		case 0x30:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("(%d);\n\n", t);
+			printf("(%d);\n", t);
 			lv += 0x3; break;
 
 		case 0x31:
@@ -1916,6 +1946,374 @@ void Decode()
 		//printf("buffer pos: 0x%x\n\n", lv);
 #endif // CLB_DEBUG
 	}
+
+	get_subid = 0;
+	get_labid = 0;
+	printf("\nSCLlv1:\n");
+	for (int i = 0; i < header.Lvl1SCL; i++)
+	{
+		while (header.SCL_lv1[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv1;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("SCLlv2:\n");
+	for (int i = 0; i < header.Lvl2SCL; i++)
+	{
+		while (header.SCL_lv2[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv2;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("SCLlv3:\n");
+	for (int i = 0; i < header.Lvl3SCL; i++)
+	{
+		while (header.SCL_lv3[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv4;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("SCLlv4:\n");
+	for (int i = 0; i < header.Lvl4SCL; i++)
+	{
+		while (header.SCL_lv4[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv4;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+
+	printf("AttackLv1:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.Lv1Attack[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endAtkLv1;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("AttackLv2:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.Lv2Attack[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endAtkLv2;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("BossAttack:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.BossAttack[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endBossAtk;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+
+	printf("Lv1Portrait:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.AnmLv1[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv1Port;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("Lv2Portrait:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.AnmLv2[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endLv2Port;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("BossPortrait:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.AnmBoss[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endBossPort;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	printf("WinPortrait:\n");
+	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
+	{
+		while (header.AnmWin[i] != sub_add[get_subid])
+		{
+			get_subid++;
+			if (get_subid > sub_cnt)
+			{
+				while (address != lab_add[get_labid])
+				{
+					get_labid++;
+				}
+				break;
+			}
+		}
+
+
+
+		if (get_subid > sub_cnt)
+		{
+			printf("    Lab\_%d;\n", get_labid);
+		}
+		else
+		{
+			printf("    Sub%d();\n", get_subid);
+		}
+	}
+	printf("endWinPort;\n\n");
+	get_subid = 0;
+	get_labid = 0;
+	for (int j = 0; j < MAXCHAR_KOG - 1; j++)
+	{
+		printf("TexPortrait%d:\n", j);
+		for (int i = 0; i < header.LTEntry[j].num_tex; i++)
+		{
+			while (header.LTEntry[j].entryPoint[i] != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+
+
+			if (get_subid > sub_cnt)
+			{
+				printf("    Lab\_%d;\n", get_labid);
+			}
+			else
+			{
+				printf("    Sub%d();\n", get_subid);
+			}
+			get_subid = 0;
+			get_labid = 0;
+		}
+		printf("endTexPort;\n\n");
+	}
 }
 
 void openFile(const char* fileName)
@@ -2070,7 +2468,7 @@ void openSCLmap(const char* fileName)
 			if (ins_num == 0x30 || ins_num == 0x31 || (ins_num >= 0x40 && ins_num <= 0x45) ||
 				(ins_num >= 0x50 && ins_num <= 0x66) || (ins_num >= 0x70 && ins_num <= 0x7d) ||
 				(ins_num >= 0x90 && ins_num <= 0x93) || ins_num == 0xa0 || ins_num == 0xa1 ||
-				(ins_num >= 0xc0 && ins_num <= 0xc6) || (ins_num >= 0xca && ins_num <= 0xce) ||
+				(ins_num >= 0xc0 && ins_num <= 0xc7) || (ins_num >= 0xca && ins_num <= 0xce) ||
 				(ins_num >= 0xd0 && ins_num <= 0xe1))
 			{
 				ins_namePos[ins_num] = init_pos;
@@ -2099,6 +2497,8 @@ int main()
 	openFile(fName);
 	Decode();
 
+	free(buffer);
+	free(mapbuffer);
 	//system("pause");
 }
 #endif
@@ -2109,7 +2509,7 @@ int main(int argc, char* argv[])
 {
 	if (argv[1] == NULL)
 	{
-		printf("Uso: KOG_SCL.exe -d input [-m sclmap]\n");
+		printf("Uso: KOG_SCL.exe input [sclmap]\n");
 		return 1;
 	}
 	else
@@ -2123,7 +2523,8 @@ int main(int argc, char* argv[])
 		}
 		Decode();
 	}
-
+	free(buffer);
+	free(mapbuffer);
 	//printf("Parametros:\n - -d: Para decodificar el archivo.\n - -m: Para leer un sclmap (Se usa junto a -d).\n");
 	//return -1;
 }
