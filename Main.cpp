@@ -5,6 +5,12 @@
 #define MAXCHAR_KOG 10
 #define SCL_BUFFER 50
 
+bool sclmapUse = false;
+
+unsigned int ins_namePos[0xff];
+unsigned int ins_nameLength[0xff];
+std::string ins_name[0xff];
+
 
 struct texEntry
 {
@@ -46,7 +52,9 @@ struct SCLHeader
 };
 
 char* buffer;
+char* mapbuffer;
 long lSize;
+long mapSize;
 
 SCLHeader header = {};
 
@@ -349,7 +357,7 @@ void Decode()
 	A partir de acá leeré las instrucciones
 
 	*/
-	unsigned int sub_cnt = 0, sub_id = 0, sub_add[1024], get_subid = 0, lab_cnt = 0, lab_id = 0, lab_add[1024], get_labid = 0;
+	unsigned int sub_cnt = 0, sub_id = 0, sub_add[4096], get_subid = 0, lab_cnt = 0, lab_id = 0, lab_add[4096], get_labid = 0;
 	unsigned int address, pop, push, sndId, chId, parId, param, type;
 	unsigned char ar, ind, reg, id, spid, anmid, anmspd;
 	unsigned int x1, x2, y1, y2;
@@ -530,7 +538,7 @@ void Decode()
 	lab_cnt = 0;
 	lab_add[0] = 0;
 
-	for (int j = 0; j < 1024; j++)
+	for (int j = 0; j < (sizeof(lab_add) / sizeof(int)); j++)
 	{
 		lab_add[j] = 0xffffffff;
 	}
@@ -1102,8 +1110,9 @@ void Decode()
 
 
 	lv = getpos;
-
-	printf("Sub%d:\n", sub_id);
+	char instname[256];
+	char * getName;
+	printf("Sub Sub%d:\n", sub_id);
 	int actPos = lv;
 	while (lv < lSize)
 	{
@@ -1117,12 +1126,39 @@ void Decode()
 				break;
 			}
 		}
+		//getName = ins_name[lv];
+
+		unsigned char pos = buffer[lv];
+		//instname = ins_name[lv];
+		bool isIns = (pos == 0x30 || pos == 0x31 || (pos >= 0x40 && pos <= 0x45) ||
+			(pos >= 0x50 && pos <= 0x66) || (pos >= 0x70 && pos <= 0x7d) ||
+			(pos >= 0x90 && pos <= 0x93) || pos == 0xa0 || pos == 0xa1 ||
+			(pos >= 0xc0 && pos <= 0xc6) || (pos >= 0xca && pos <= 0xce) ||
+			(pos >= 0xd0 && pos <= 0xe1));
+
+		if (isIns)
+		{
+
+
+			int getLength = ins_nameLength[pos];
+
+
+			if (ins_nameLength[pos])
+			{
+				std::cout << ins_name[pos];
+			}
+			else
+			{
+				printf("ins_%d", uChar(buffer[lv]));
+			}
+		}
+
 
 		switch (uChar(buffer[lv]))
 		{
 		case 0x30:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("wait{ %d, }\n\n", t);
+			printf("(%d);\n\n", t);
 			lv += 0x3; break;
 
 		case 0x31:
@@ -1145,11 +1181,11 @@ void Decode()
 
 			if (get_subid > sub_cnt)
 			{
-				printf("enmCreate{\n	x: %d,\n	y: %d,\n	Lab\_%d,\n}\n", x, y, get_labid);
+				printf("(%d, %d, Lab\_%d);\n", x, y, get_labid);
 			}
 			else
 			{
-				printf("enmCreate{\n	x: %d,\n	y: %d,\n	Sub%d,\n}\n", x, y, get_subid);
+				printf("(%d, %d, Sub%d);\n", x, y, get_subid);
 			}
 			lv += 0x9; break;
 
@@ -1169,7 +1205,7 @@ void Decode()
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTexture{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n", reg, id, strname);
+			printf("(%d, %d, \"%s\");\n", reg, id, strname);
 			//delete[iter] strname;
 			lv += 0x2 + iter; iter = 0; break;
 		}
@@ -1180,7 +1216,7 @@ void Decode()
 			y1 = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
 			x2 = convCharUInt(buffer[lv + 6], buffer[lv + 7]);
 			y2 = convCharUInt(buffer[lv + 8], buffer[lv + 9]);
-			printf("sprite%d: { xi: %d, yi: %d, xf: %d, yf: %d }\n", spid, x1, y1, x2, y2);
+			printf("(%d, %d, %d, %d);\n", spid, x1, y1, x2 - x1, y2 - y1);
 			lv += 0xA; break;
 		}
 		case 0x42:
@@ -1192,15 +1228,15 @@ void Decode()
 			{
 				sprites[i] = uChar(buffer[lv + 3 + i]);
 			}
-			printf("AnimeDef{\n    Index: %d,\n    spr_number: %d,\n    sprites: { ", ind, ar);
+			printf("(%d, %d, ", ind, ar);
 			for (int i = 0; i < ar; i++)
 			{
 				if (i < ar - 1)
-					printf("sprite%d, ", sprites[i]);
+					printf("%d, ", sprites[i]);
 				else
-					printf("sprite%d }\n", sprites[i]);
+					printf("%d);", sprites[i]);
 			}
-			printf("}\n");
+			printf("\n");
 			lv += 0x3 + (ar); break;
 		}
 
@@ -1220,7 +1256,7 @@ void Decode()
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTextureOld{\n    Reg: %d,\n    Index: %d,\n    Filename: \"%s\",\n}\n", reg, id, strname);
+			printf("(%d, %d, \"%s\");\n", reg, id, strname);
 
 			lv += 0x2 + iter; iter = 0; break;
 		}
@@ -1238,12 +1274,12 @@ void Decode()
 					strname[i] = 0;
 			}
 			//texFile = strname;
-			printf("loadTextureEx{\n    Filename: \"%s\",\n}\n", strname);
+			printf("(\"%s\");\n", strname);
 			lv += 0x2 + iter; iter = 0; break;
 		}
 
 		case 0x45:
-			printf("anmStop;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x50:
@@ -1264,9 +1300,9 @@ void Decode()
 
 			if (get_subid > sub_cnt)
 
-				printf("call(Lab\_%d);\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("call(Sub%d);\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; get_subid = 0; break;
 
 		case 0x51:
@@ -1288,9 +1324,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Lab\_%d,\n}\n", x, y, get_labid);
+				printf("(%d, %d, Lab\_%d);\n", x, y, get_labid);
 			else
-				printf("atkCreate{\n    dx: %d,\n    dy: %d,\n    Sub%d,\n}\n", x, y, get_subid);
+				printf("( %d, %d, Sub%d);\n", x, y, get_subid);
 			lv += 0x9; get_subid = 0; break;
 
 		case 0x52:
@@ -1311,20 +1347,20 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("enmSet{ Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("enmSet{ Sub%d, }\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x53:
 			pop = buffer[lv + 1];
-			printf("return{ pop: %d, }\n", pop);
+			printf("(%d);\n", pop);
 			lv += 0x2; break;
 
 		case 0x54:
 			anmid = uChar(buffer[lv + 1]);
 			anmspd = uChar(buffer[lv + 2]);
-			printf("anmSet{\n    anmId: %d,\n    speed: %d,\n}\n", anmid, anmspd);
+			printf("(%d, %d);\n", anmid, anmspd);
 			lv += 0x3; break;
 
 		case 0x55:
@@ -1345,9 +1381,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("deathCall{ Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("deathCall{ Sub%d, }\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x56:
@@ -1368,16 +1404,16 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("setParentlessObj{ address: Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("setParentlessObj{ address: Sub%d, }\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x57:
 
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			t = convCharInt(buffer[lv + 3], buffer[lv + 4]);
-			printf("moveVel{\n    vel: %d,\n    time: %d,\n}\n", v0, t);
+			printf("(%d, %d);\n", v0, t);
 			lv += 0x5; break;
 
 		case 0x58:
@@ -1385,7 +1421,7 @@ void Decode()
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			va = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			t = convCharInt(buffer[lv + 5], buffer[lv + 6]);
-			printf("moveVelAccel{\n    velInit: %d,\n    accel: %d,\n    time: %d,\n}\n", v0, va, t);
+			printf("(%d, %d, %d);\n", v0, va, t);
 			lv += 0x7; break;
 
 		case 0x59:
@@ -1393,25 +1429,25 @@ void Decode()
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			vd = buffer[lv + 3];
 			t = convCharInt(buffer[lv + 4], buffer[lv + 5]);
-			printf("moveVelRot{\n    velInit: %d,\n    angVel: %d,\n    time: %d,\n}\n", v0, vd, t);
+			printf("(%d, %d, %d);\n", v0, vd, t);
 			lv += 0x6; break;
 
 		case 0x5a:
-			printf("waitMainObjRet;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x5b:
 			sndId = uChar(buffer[lv + 1]);
-			printf("playSound{ %d, }\n", sndId);
+			printf("(%d);\n", sndId);
 			lv += 0x2;  break;
 
 		case 0x5c:
-			printf("die;\n\n");
+			printf("();\n\n");
 			lv++; break;
 
 		case 0x5d:
 			dmg = convCharInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("madnessGaugeDmg{ %d, }\n", dmg);
+			printf("(%d);\n", dmg);
 			lv += 0x3; break;
 
 		case 0x5e:
@@ -1432,9 +1468,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("childCreate{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
+				printf("(%d, Lab\_%d);\n", chId, get_labid);
 			else
-				printf("childCreate{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
+				printf("(%d, Sub%d);\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x5f:
@@ -1456,28 +1492,28 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("changeChildTask{\n    id: %d,\n    Lab\_%d,\n}\n", chId, get_labid);
+				printf("(%d, Lab\_%d);\n", chId, get_labid);
 			else
-				printf("changeChildTask{\n    id: %d,\n    Sub%d,\n}\n", chId, get_subid);
+				printf("(%d, Sub%d);\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x60:
 
 			parId = uChar(buffer[lv - 1]);
-			printf("parentId{ id: %d, }\n", parId);
+			printf("(%d);\n", parId);
 			lv += 0x2; break;
 
 		case 0x61:
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			t = convCharUInt(buffer[lv + 3], buffer[lv + 4]);
-			printf("LMovSyncParent{\n    v0: %d,\n    time: %d,\n}\n", v0, t);
+			printf("(%d, %d);\n", v0, t);
 			lv += 0x5; break;
 
 		case 0x62:
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			va = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			t = convCharUInt(buffer[lv + 5], buffer[lv + 6]);
-			printf("AcMovSyncParent{\n    velInit: %d,\n    accel: %d,\n    time: %d,\n}\n", v0, va, t);
+			printf("(%d, %d, %d);\n", v0, va, t);
 			lv += 0x7; break;
 
 		case 0x63:
@@ -1485,12 +1521,12 @@ void Decode()
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			vd = buffer[lv + 3];
 			t = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
-			printf("RotMovSyncParent{\n    velInit: %d,\n    angVel: %d,\n    time: %d,\n}\n", v0, vd, t);
+			printf("(%d, %d, %d);\n", v0, vd, t);
 			lv += 0x6; break;
 
 		case 0x64:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("WaitSyncParent{ time: %d, }\n", t);
+			printf("(%d);\n", t);
 			lv += 0x3; break;
 
 		case 0x65:
@@ -1513,90 +1549,90 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Lab\_%d,\n}\n", x, y, param, get_labid);
+				printf("(%d, %d, 0x%x, Lab\_%d);\n", x, y, param, get_labid);
 			else
-				printf("atkSet2{\n    dx: %d,\n    dy: %d,\n    param: 0x%x,\n    Sub%d,\n}\n", x, y, param, get_subid);
+				printf("(%d, %d, 0x%x, Sub%d);\n", x, y, param, get_subid);
 			lv += 0xc; break;
 
 		case 0x66:
 			x = convCharInt(buffer[lv + 1], buffer[lv + 2]);
 			y = convCharInt(buffer[lv + 3], buffer[lv + 4]);
 			type = uChar(buffer[lv + 5]);
-			printf("effCreate{\n    dx: %d,\n    dy: %d,\n    type: %d,\n}\n", x, y, type);
+			printf("(%d, %d, %d);\n", x, y, type);
 			lv += 0x6;  break;
 
 		case 0x70:
-			printf("tamaOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x71:
-			printf("laserOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x72:
-			printf("enmAng;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x73:
-			printf("aimAng;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x74:
-			printf("laserAccumulated;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x75:
 			w = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("laserOpen{ width: %d,}\n", w);
+			printf("(%d);\n", w);
 			lv += 0x5; break;
 
 		case 0x76:
-			printf("laserClose;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x77:
-			printf("hominglOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x78:
-			printf("lightningSphere;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x79:
-			printf("MorganRingOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x7a:
-			printf("crossOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x7b:
-			printf("flowerOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x7c:
-			printf("GFireOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x7d:
-			printf("ionRingOn;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x90:
-			printf("newMSG{}\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x91:
-			printf("waitKeyMSG;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x92:
-			printf("newLineMSG;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0x93:
 			t = convCharUInt(buffer[lv + 1], buffer[lv + 2]);
-			printf("waitMSG{ %d, }\n", t);
+			printf("(%d);\n", t);
 			lv += 0x3; break;
 
 		case 0xa0:
@@ -1616,30 +1652,30 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("anmTask{ Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("anmTask{ Sub%d, }\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xa1:
 			type = uChar(buffer[lv + 1]);
-			printf("anmTexMode{ mode: %d, }\n", type);
+			printf("(%d);\n", type);
 			lv += 0x2; break;
 
 		case 0xc0:
 			var = uChar(buffer[lv - 1]);
-			printf("PUSH var%d;\n", var);
+			printf("(var%d);\n", var);
 			lv++; break;
 
 		case 0xc1:
 			var = uChar(buffer[lv - 1]);
-			printf("POP var%d;\n", var);
+			printf("(var%d);\n", var);
 			lv += 0x1; break;
 
 		case 0xc2:
 			var = uChar(buffer[lv + 1]);
 			var_content = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			printf("var%d = %d;\n", var, var_content);
+			printf("(var%d, %d);\n", var, var_content);
 			lv += 0x6; break;
 
 		case 0xc3:
@@ -1650,7 +1686,7 @@ void Decode()
 
 		case 0xc4:
 			var_content = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			printf("PUSH %d;\n", var_content);
+			printf("(%d);\n", var_content);
 			lv += 0x5; break;
 
 		case 0xc5:
@@ -1671,9 +1707,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("POPJmpTrue{ Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d)\n", get_labid);
 			else
-				printf("POPJmpTrue{ Sub%d, }\n", get_subid);
+				printf("(Sub%d)\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc6:
@@ -1694,9 +1730,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("POPJmpFalse{ Lab\_%d, }\n", get_labid);
+				printf("(Lab\_%d)\n", get_labid);
 			else
-				printf("POPJmpFalse{ Sub%d, }\n", get_subid);
+				printf("(Sub%d)\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc7:
@@ -1716,26 +1752,65 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("jmp{ Lab\_%d, }\n", get_subid);
+				printf("(Lab\_%d);\n", get_subid);
 			else
-				printf("jmp{ Sub%d, }\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xca:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
 
-			lv++; break;
+
+			if (get_subid > sub_cnt)
+			printf("(Lab\_%d);\n", get_labid);
+			else
+			printf("(Sub%d);\n", get_subid);
+			lv+= 0x5; break;
+
+		case 0xcb:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			while (address != sub_add[get_subid])
+			{
+				get_subid++;
+				if (get_subid > sub_cnt)
+				{
+					while (address != lab_add[get_labid])
+					{
+						get_labid++;
+					}
+					break;
+				}
+			}
+
+			if (get_subid > sub_cnt)
+				printf("(Lab\_%d);\n", get_labid);
+			else
+				printf("(Sub%d);\n", get_subid);
+			lv+= 0x5; break;
 
 		case 0xcc:
-			printf("endFunc;\n\n");
+			printf("();\n\n");
 			if (lv < lSize - 1)
 			{
 				sub_id++;
-				printf("Sub%d:\n\n", sub_id);
+				printf("Sub Sub%d:\n\n", sub_id);
 			}
 			lv++; break;
 
 		case 0xcd:
-			printf("JmpStackTop();\n\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xce:
@@ -1755,81 +1830,81 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("loop( Lab\_%d, );\n", get_labid);
+				printf("(Lab\_%d);\n", get_labid);
 			else
-				printf("loop( Sub%d, );\n", get_subid);
+				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xd0:
-			printf("PUSH SUM;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd1:
-			printf("PUSH SUB;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd2:
-			printf("PUSH MUL;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd3:
-			printf("PUSH DIV;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd4:
-			printf("PUSH MOD;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd5:
-			printf("PUSH NEG;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd6:
-			printf("PUSH SIN;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd7:
-			printf("PUSH COS;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd8:
-			printf("PUSH RND;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xd9:
-			printf("PUSH ATAN;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xda:
-			printf("PUSH EQU;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xdb:
-			printf("PUSH NEQ;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xdc:
-			printf("PUSH GREAT;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xdd:
-			printf("PUSH LESS;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xde:
-			printf("PUSH GEQ;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xdf:
-			printf("PUSH LEQ;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xe0:
-			printf("PUSH MAX;\n");
+			printf("();\n");
 			lv++; break;
 
 		case 0xe1:
-			printf("PUSH MIN;\n");
+			printf("();\n");
 			lv++; break;
 
 		default:
@@ -1854,7 +1929,7 @@ void openFile(const char* fileName)
 	size_t result;
 
 	pFile = fopen(fileName, "rb");
-	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
+	if (pFile == NULL) { fputs("Couldnt open the file", stderr); exit(1); }
 
 	// obtain file size:
 	fseek(pFile, 0, SEEK_END);
@@ -1872,15 +1947,158 @@ void openFile(const char* fileName)
 
 }
 
+
+void openSCLmap(const char* fileName)
+{
+
+
+	//std::string ins_name[82];
+
+	//This code has been taken from https://cplusplus.com/reference/cstdio/fread/
+	FILE* pFile;
+	size_t result;
+
+	pFile = fopen(fileName, "rb");
+	if (pFile == NULL) { fputs("Couldn't open the sclmap", stderr); exit(1); }
+
+	// obtain file size:
+	fseek(pFile, 0, SEEK_END);
+	mapSize = ftell(pFile);
+	rewind(pFile);
+
+	// allocate memory to contain the whole file:
+	mapbuffer = (char*)malloc(sizeof(char) * mapSize);
+	if (mapbuffer == NULL) { fputs("Memory error", stderr); exit(2); }
+
+	// copy the file into the buffer:
+	result = fread(mapbuffer, 1, mapSize, pFile);
+	if (result != mapSize) { fputs("Reading error", stderr); exit(3); }
+	//Until here
+
+	int i = 0;
+	while (mapbuffer[i] != '!')
+	{
+		i++;
+		if (i > mapSize)
+		{
+			printf("No se encuentra la etiqueta \"!kog_ins\"\n");
+			exit(4);
+		}
+	}
+	char chkmap[7];
+	chkmap[0] = 'k';
+	chkmap[1] = 'o';
+	chkmap[2] = 'g';
+	chkmap[3] = '_';
+	chkmap[4] = 'i';
+	chkmap[5] = 'n';
+	chkmap[6] = 's';
+	i++;
+	int j = 0;
+	while (j < 7 && chkmap[j] == mapbuffer[i + j])
+	{
+		j++;
+	}
+	if (j < 7)
+	{
+		printf("Etiqueta desconocida.\n");
+		exit(5);
+	}
+	i += j;
+
+
+#ifdef CLB_DEBUG
+	printf("Archivo abierto correctamente.\n");
+#endif
+
+
+
+	int ins_num = 0;
+	int getins_n[4];
+	getins_n[3] = 0;
+	int k = 0;
+	char insname[256];
+	int l = 0;
+	while (mapbuffer[i] != ';')
+	{
+		while (mapbuffer[i] >= '0' && mapbuffer[i] <= '9')
+		{
+			getins_n[k] = mapbuffer[i] - 0x30;
+			if (getins_n[3] != 0)
+			{
+				printf("Numero de instruccion invalido.\n");
+				exit(6);
+			}
+			k++;
+			i++;
+		}
+		if (mapbuffer[i - 1] >= '0' && mapbuffer[i - 1] <= '9')
+		{
+			if (k == 3)
+			{
+				ins_num = (getins_n[0] * 100) + (getins_n[1] * 10) + getins_n[2];
+			}
+			else if (k == 2)
+			{
+				ins_num = (getins_n[0] * 10) + getins_n[1];
+			}
+			else if (k == 0)
+			{
+			}
+			else
+			{
+				printf("Numero de instruccion invalido.\n");
+				exit(6);
+			}
+
+			while (ins_num >= 0x30 && !(mapbuffer[i] >= 'A' && mapbuffer[i] <= 'z') && mapbuffer[i] != ';')
+			{
+				i++;
+			}
+			k = 0;
+			int size = 0;
+			int init_pos = i;
+			while (mapbuffer[i] >= 'A' && mapbuffer[i] <= 'z')
+			{
+				insname[size] = mapbuffer[i];
+				insname[size + 1] = 0;
+				l++;
+				i++;
+				size++;
+			}
+			l = 0;
+			if (ins_num == 0x30 || ins_num == 0x31 || (ins_num >= 0x40 && ins_num <= 0x45) ||
+				(ins_num >= 0x50 && ins_num <= 0x66) || (ins_num >= 0x70 && ins_num <= 0x7d) ||
+				(ins_num >= 0x90 && ins_num <= 0x93) || ins_num == 0xa0 || ins_num == 0xa1 ||
+				(ins_num >= 0xc0 && ins_num <= 0xc6) || (ins_num >= 0xca && ins_num <= 0xce) ||
+				(ins_num >= 0xd0 && ins_num <= 0xe1))
+			{
+				ins_namePos[ins_num] = init_pos;
+				ins_nameLength[ins_num] = size;
+				ins_name[ins_num] = insname;
+			}
+
+		}
+
+
+		i++;
+	}
+}
+
 #ifdef CLB_DEBUG
 int main()
 {
 	int number_1 = 3;
 	std::string filename;
+	std::string mapname;
 	std::cout << "Nombre del archivo: "; std::cin >> filename;
+	std::cout << "Nombre del mapa: "; std::cin >> mapname;
 	const char* fName = filename.c_str();
+	const char* mName = mapname.c_str();
+	openSCLmap(mName);
 	openFile(fName);
 	Decode();
+
 	//system("pause");
 }
 #endif
@@ -1891,14 +2109,22 @@ int main(int argc, char* argv[])
 {
 	if (argv[1] == NULL)
 	{
-		printf("Uso: KOG_SCL.exe input\n");
+		printf("Uso: KOG_SCL.exe -d input [-m sclmap]\n");
 		return 1;
 	}
 	else
 	{
 		const char* fName = argv[1];
 		openFile(fName);
+		if (argv[2] != NULL)
+		{
+			const char* fName = argv[2];
+			openSCLmap(fName);
+		}
 		Decode();
 	}
+
+	//printf("Parametros:\n - -d: Para decodificar el archivo.\n - -m: Para leer un sclmap (Se usa junto a -d).\n");
+	//return -1;
 }
 #endif // !
