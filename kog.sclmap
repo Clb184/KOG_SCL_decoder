@@ -1,0 +1,96 @@
+!kog_ins
+48: wait
+49: enmCreate
+
+64: loadTex
+65: sprite
+66: animeDef
+67: loadTexOld
+68: loadTexEx
+69: anmStop
+
+80: call
+81: atkCreate
+82: enmSet
+83: return
+84: anmSet
+85: deathCall
+86: setParLsObj
+87: moveSpd
+88: moveAccel
+89: moveRot
+90: waitMainObjRet
+91: playSound
+92: die
+93: madnessGaugeDmg
+94: childCreate
+95: changeChildTask
+96: parentId
+97: lMovSyncPar
+98: acMovSyncPar
+99: rotMovSyncPar
+100: waitSyncPar
+101: atkSet2
+102: effCreate
+
+112: tamaOn
+113: laserOn
+114: enmAng
+115: aimAng
+116: laserWait
+117: laserOpen
+118: laserClose
+119: homingLOn
+120: lightningSphere
+121: roundLOn
+122: crossOn
+123: flowerOn
+124: gFireOn
+125: ionRingOn
+
+144: newMsg
+145: waitKeyMsg
+146: newLineMsg
+147: waitMsg
+
+160: anmTask
+161: anmTexMode
+
+192: pushVar
+193: popVar
+194: setVar
+195: movConst
+
+196: pushInt
+197: jmpTrue
+198: jmpFalse
+199: jmp
+202: jmpTruePush
+203: jmpFalsePush
+204: endSub
+205: jmpStackTop
+206: loop
+
+208: pushSum
+209: pushSub
+210: pushMul
+211: pushDiv
+212: pushMod
+213: pushNeg
+
+214: pushSin
+215: pushCos
+216: pushRnd
+217: pushAtan
+
+218: pushEqu
+219: pushNEqu
+220: pushGret
+221: pushLess
+222: pushGEq
+223: pushLEq
+
+224: pushMax
+225: pushMin
+
+;
