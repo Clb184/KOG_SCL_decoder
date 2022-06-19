@@ -1147,7 +1147,7 @@ void Decode()
 		{
 			if (lv == ComboAtk_add[cb])
 			{
-				printf("Combo\_%d:\n", cb);
+				printf("[Combo\_%d]\n", cb);
 				break;
 			}
 		}
@@ -1384,7 +1384,7 @@ void Decode()
 
 		case 0x53:
 			pop = buffer[lv + 1];
-			printf("(%d);\n", pop);
+			printf("(var%d);\n", pop);
 			lv += 0x2; break;
 
 		case 0x54:
@@ -1579,9 +1579,9 @@ void Decode()
 
 
 			if (get_subid > sub_cnt)
-				printf("(%d, %d, 0x%x, Lab\_%d);\n", x, y, param, get_labid);
+				printf("(%d, %d, %d, Lab\_%d);\n", x, y, param, get_labid);
 			else
-				printf("(%d, %d, 0x%x, Sub%d);\n", x, y, param, get_subid);
+				printf("(%d, %d, %d, Sub%d);\n", x, y, param, get_subid);
 			lv += 0xc; break;
 
 		case 0x66:
@@ -1949,7 +1949,7 @@ void Decode()
 
 	get_subid = 0;
 	get_labid = 0;
-	printf("\nSCLlv1:\n");
+	printf("\nSCLlv1{\n");
 	for (int i = 0; i < header.Lvl1SCL; i++)
 	{
 		while (header.SCL_lv1[i] != sub_add[get_subid])
@@ -1976,10 +1976,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv1;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("SCLlv2:\n");
+	printf("SCLlv2{\n");
 	for (int i = 0; i < header.Lvl2SCL; i++)
 	{
 		while (header.SCL_lv2[i] != sub_add[get_subid])
@@ -2006,10 +2006,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv2;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("SCLlv3:\n");
+	printf("SCLlv3{\n");
 	for (int i = 0; i < header.Lvl3SCL; i++)
 	{
 		while (header.SCL_lv3[i] != sub_add[get_subid])
@@ -2036,10 +2036,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv4;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("SCLlv4:\n");
+	printf("SCLlv4{\n");
 	for (int i = 0; i < header.Lvl4SCL; i++)
 	{
 		while (header.SCL_lv4[i] != sub_add[get_subid])
@@ -2066,11 +2066,11 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv4;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
 
-	printf("AttackLv1:\n");
+	printf("AttackLv1{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.Lv1Attack[i] != sub_add[get_subid])
@@ -2097,10 +2097,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endAtkLv1;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("AttackLv2:\n");
+	printf("AttackLv2{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.Lv2Attack[i] != sub_add[get_subid])
@@ -2127,10 +2127,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endAtkLv2;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("BossAttack:\n");
+	printf("BossAttack{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.BossAttack[i] != sub_add[get_subid])
@@ -2157,11 +2157,11 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endBossAtk;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
 
-	printf("Lv1Portrait:\n");
+	printf("Lv1Portrait{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.AnmLv1[i] != sub_add[get_subid])
@@ -2188,10 +2188,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv1Port;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("Lv2Portrait:\n");
+	printf("Lv2Portrait{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.AnmLv2[i] != sub_add[get_subid])
@@ -2218,10 +2218,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endLv2Port;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("BossPortrait:\n");
+	printf("BossPortrait{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.AnmBoss[i] != sub_add[get_subid])
@@ -2248,10 +2248,10 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endBossPort;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
-	printf("WinPortrait:\n");
+	printf("WinPortrait{\n");
 	for (int i = 0; i < MAXCHAR_KOG - 1; i++)
 	{
 		while (header.AnmWin[i] != sub_add[get_subid])
@@ -2278,12 +2278,12 @@ void Decode()
 			printf("    Sub%d();\n", get_subid);
 		}
 	}
-	printf("endWinPort;\n\n");
+	printf("}\n\n");
 	get_subid = 0;
 	get_labid = 0;
 	for (int j = 0; j < MAXCHAR_KOG - 1; j++)
 	{
-		printf("TexPortrait%d:\n", j);
+		printf("TexPortrait%d{\n", j);
 		for (int i = 0; i < header.LTEntry[j].num_tex; i++)
 		{
 			while (header.LTEntry[j].entryPoint[i] != sub_add[get_subid])
@@ -2312,14 +2312,12 @@ void Decode()
 			get_subid = 0;
 			get_labid = 0;
 		}
-		printf("endTexPort;\n\n");
+		printf("}\n\n");
 	}
 }
 
 void openFile(const char* fileName)
 {
-
-
 
 
 	//This code has been taken from https://cplusplus.com/reference/cstdio/fread/
@@ -2456,7 +2454,7 @@ void openSCLmap(const char* fileName)
 			k = 0;
 			int size = 0;
 			int init_pos = i;
-			while (mapbuffer[i] >= 'A' && mapbuffer[i] <= 'z')
+			while ((mapbuffer[i] >= 'A' && mapbuffer[i] <= 'z') || (mapbuffer[i] >= '0' && mapbuffer[i] <= '9'))
 			{
 				insname[size] = mapbuffer[i];
 				insname[size + 1] = 0;
