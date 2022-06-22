@@ -392,180 +392,23 @@ void Decode()
 	//}
 	//std::string texFile;
 
+	for (int j = 0; j < (sizeof(sub_add) / sizeof(int)); j++)
+	{
+		sub_add[j] = 0x00000000;
+	}
+	for (int j = 0; j < (sizeof(lab_add) / sizeof(int)); j++)
+	{
+		lab_add[j] = 0x00000000;
+	}
+
 	sub_add[sub_cnt] = lv;
 	sub_cnt++;
 	int getpos = lv;
-	while (lv < lSize)
-	{
-		switch (uChar(buffer[lv]))
-		{
-		case 0x30:
-			lv += 0x3; break;
-
-		case 0x31:
-			lv += 0x9; break;
-
-		case 0x40:
-		{
-			while (buffer[lv + 2 + iter])
-			{
-				iter++;
-			}
-			lv += 0x2 + iter; iter = 0; break;
-		}
-		case 0x41:
-			lv += 0xA; break;
-
-		case 0x42:
-		{
-			ar = uChar(buffer[lv + 2]);
-			lv += 0x3 + ar; break;
-		}
-
-		case 0x43:
-		{
-			while (buffer[lv + 2 + iter])
-			{
-				iter++;
-			}
-
-			lv += 0x2 + iter; iter = 0; break;
-		}
-		case 0x44:
-		{
-			while (buffer[lv + 1 + iter])
-			{
-				iter++;
-			}
-			lv += 0x2 + iter; iter = 0; break;
-		}
-
-		case 0x50:
-			lv += 0x5; break;
-
-		case 0x51:
-			lv += 0x9;  break;
-
-		case 0x52:
-			lv += 0x5; break;
-
-		case 0x53:
-			lv += 0x2; break;
-
-		case 0x54:
-			lv += 0x3; break;
-
-		case 0x55:
-
-		case 0x56:
-
-		case 0x57:
-			lv += 0x5; break;
-
-		case 0x58:
-			lv += 0x7; break;
-
-		case 0x59:
-			lv += 0x6; break;
-
-		case 0x5b:
-			lv += 0x2;  break;
-
-		case 0x5d:
-			lv += 0x3; break;
-
-		case 0x5e:
-			lv += 0x6; break;
-
-		case 0x5f:
-			lv += 0x6; break;
-
-		case 0x60:
-			lv += 0x2; break;
-
-		case 0x61:
-			lv += 0x5; break;
-
-		case 0x62:
-			lv += 0x7; break;
-
-		case 0x63:
-			lv += 0x6; break;
-
-		case 0x64:
-			lv += 0x3; break;
-
-		case 0x65:
-			lv += 0xc; break;
-
-		case 0x66:
-			lv += 0x6;  break;
-
-		case 0x75:
-			lv += 0x5; break;
-
-		case 0x93:
-			lv += 0x3; break;
-
-		case 0xa0:
-			lv += 0x5; break;
-
-		case 0xa1:
-			lv += 0x2; break;
-
-		case 0xc2:
-			lv += 0x6; break;
-
-		case 0xc3:
-			lv += 0x3; break;
-
-		case 0xc4:
-
-		case 0xc5:
-
-		case 0xc6:
-
-		case 0xc7:
-			lv += 0x5; break;
-
-		case 0xca:
-
-			lv++; break;
-
-		case 0xcc:
-			if (lv < lSize - 1)
-			{
-				sub_add[sub_cnt] = lv + 1;
-				sub_cnt++;
-			}
-			lv++; break;
-
-		case 0xce:
-			lv += 0x5; break;
-
-		default:
-			//	if (lv < lSize - 1)
-			lv++;
-			break;
-		}
-	}
-
-
 	lab_cnt = 0;
 	lab_add[0] = 0;
 
-	for (int j = 0; j < (sizeof(lab_add) / sizeof(int)); j++)
-	{
-		lab_add[j] = 0xffffffff;
-	}
-
-	lv = getpos;
-
 	while (lv < lSize)
 	{
-		get_subid = 0;
-		get_labid = 0;
-
 		switch (uChar(buffer[lv]))
 		{
 		case 0x30:
@@ -573,31 +416,19 @@ void Decode()
 
 		case 0x31:
 			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
-			while (address != sub_add[get_subid])
+			for (int i = 0 ; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -609,7 +440,7 @@ void Decode()
 			{
 				iter++;
 			}
-			lv += 0x2 + iter; iter = 0; break;
+			lv += 0x3 + iter; iter = 0; break;
 		}
 		case 0x41:
 		{
@@ -627,7 +458,7 @@ void Decode()
 			{
 				iter++;
 			}
-			lv += 0x2 + iter; iter = 0; break;
+			lv += 0x3 + iter; iter = 0; break;
 		}
 		case 0x44:
 		{
@@ -638,34 +469,21 @@ void Decode()
 			lv += 0x2 + iter; iter = 0; break;
 		}
 
-
 		case 0x50:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -673,64 +491,39 @@ void Decode()
 
 		case 0x51:
 			address = convCharInt(buffer[lv + 5], buffer[lv + 6], buffer[lv + 7], buffer[lv + 8]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
 			lv += 0x9; get_subid = 0; break;
 
 		case 0x52:
-
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -743,66 +536,40 @@ void Decode()
 			lv += 0x3; break;
 
 		case 0x55:
-
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
 			lv += 0x5; break;
 
 		case 0x56:
-
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -825,31 +592,19 @@ void Decode()
 
 		case 0x5e:
 			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -857,31 +612,19 @@ void Decode()
 
 		case 0x5f:
 			address = convCharInt(buffer[lv + 2], buffer[lv + 3], buffer[lv + 4], buffer[lv + 5]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -904,31 +647,19 @@ void Decode()
 
 		case 0x65:
 			address = convCharInt(buffer[lv + 9], buffer[lv + 10], buffer[lv + 11], buffer[lv + 12]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -945,31 +676,19 @@ void Decode()
 
 		case 0xa0:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < sub_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == sub_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = address;
+					sub_cnt++;
 					break;
 				}
 			}
@@ -977,6 +696,7 @@ void Decode()
 
 		case 0xa1:
 			lv += 0x2; break;
+
 
 		case 0xc2:
 			lv += 0x6; break;
@@ -988,33 +708,20 @@ void Decode()
 			lv += 0x5; break;
 
 		case 0xc5:
-			//var = uChar(buffer[lv - 1]);
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < lab_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == lab_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
 					break;
 				}
 			}
@@ -1022,31 +729,19 @@ void Decode()
 
 		case 0xc6:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < lab_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == lab_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
 					break;
 				}
 			}
@@ -1054,92 +749,134 @@ void Decode()
 
 		case 0xc7:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < lab_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == lab_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
 					break;
 				}
 			}
 			lv += 0x5; break;
 
+		case 0xca:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			for (int i = 0; i < lab_cnt + 1; i++)
+			{
+				if (address == lab_add[i])
+				{
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xcb:
+			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
+			for (int i = 0; i < lab_cnt + 1; i++)
+			{
+				if (address == lab_add[i])
+				{
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
+					break;
+				}
+			}
+			lv += 0x5; break;
+
+		case 0xcc:
+			for (int i = 0; i < sub_cnt + 1; i++)
+			{
+				if (lv + 1 == sub_add[i])
+				{
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = lv + 1;
+					sub_cnt++;
+					break;
+				}
+			}
+			lv++; break;
+
 		case 0xce:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			for (int i = 0; i < lab_cnt + 1; i++)
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
+				if (address == lab_add[i])
 				{
-					if (lab_cnt == 0)
-					{
-						lab_add[lab_cnt] = address;
-						lab_cnt++;
-					}
-					else
-					{
-						int it = 0;
-
-						while (address != lab_add[it])
-						{
-							if (lab_add[it] != 0xffffffff)
-								it++;
-							else
-							{
-								lab_add[it] = address;
-								lab_cnt++;
-							}
-						}
-					}
+					break;
+				}
+				else if (lab_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					lab_add[i] = address;
+					lab_cnt++;
 					break;
 				}
 			}
 			lv += 0x5; break;
 
 		default:
-			//if (lv < lSize - 1)
-			lv++;
+			if (lv < lSize - 1)
+				lv++;
 			break;
 		}
-
 	}
-
 
 	lv = getpos;
 	char instname[256];
 	char * getName;
-	printf("Sub Sub%d:\n", sub_id);
 	int actPos = lv;
 	int get_comboid = 0;
+	get_subid = 0;
+	get_labid = 0;
 	while (lv < lSize)
 	{
 		get_subid = 0;
 		get_labid = 0;
+		for (int sb = 0; sb <= sub_cnt; sb++)
+		{
+			if (lv == sub_add[sb])
+			{
+				printf("Sub Sub%d:\n", sb);
+				break;
+			}
+		}
 		for (int lb = 0; lb <= lab_cnt; lb++)
 		{
 			if (lv == lab_add[lb])
 			{
-				printf("Lab\_%d:\n", lb);
+				printf("Lab%d:\n", lb);
 				break;
 			}
 		}
@@ -1147,14 +884,12 @@ void Decode()
 		{
 			if (lv == ComboAtk_add[cb])
 			{
-				printf("[Combo\_%d]\n", cb);
+				printf("[Combo%d]\n", cb);
 				break;
 			}
 		}
-		//getName = ins_name[lv];
 
 		unsigned char pos = buffer[lv];
-		//instname = ins_name[lv];
 		bool isIns = (pos == 0x30 || pos == 0x31 || (pos >= 0x40 && pos <= 0x45) ||
 			(pos >= 0x50 && pos <= 0x66) || (pos >= 0x70 && pos <= 0x7d) ||
 			(pos >= 0x90 && pos <= 0x93) || pos == 0xa0 || pos == 0xa1 ||
@@ -1163,8 +898,6 @@ void Decode()
 
 		if (isIns)
 		{
-
-
 			int getLength = ins_nameLength[pos];
 
 
@@ -1172,13 +905,12 @@ void Decode()
 			{
 				if (pos != 0xcc)
 				std::cout << "    ";
-
 				std::cout << ins_name[pos];
 			}
 			else
 			{
 				if (pos != 0xcc)
-					std::cout << "    ";
+				std::cout << "    ";
 				printf("ins_%d", uChar(buffer[lv]));
 			}
 		}
@@ -1198,25 +930,8 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-			{
-				printf("(%d, %d, Lab\_%d);\n", x, y, get_labid);
-			}
-			else
-			{
-				printf("(%d, %d, Sub%d);\n", x, y, get_subid);
-			}
+			printf("(%d, %d, Sub%d);\n", x, y, get_subid);
 			lv += 0x9; break;
 
 		case 0x40:
@@ -1229,15 +944,13 @@ void Decode()
 			}
 			for (int i = 0; i <= iter; i++)
 			{
-				if (i < iter)
 					strname[i] = buffer[lv + 2 + i];
-				if (i >= iter)
-					strname[i] = 0;
+					strname[i + 1] = 0;
 			}
 			//texFile = strname;
 			printf("(%d, %d, \"%s\");\n", reg, id, strname);
 			//delete[iter] strname;
-			lv += 0x2 + iter; iter = 0; break;
+			lv += 0x3 + iter; iter = 0; break;
 		}
 		case 0x41:
 		{
@@ -1280,15 +993,13 @@ void Decode()
 			}
 			for (int i = 0; i <= iter; i++)
 			{
-				if (i < iter)
 					strname[i] = buffer[lv + 2 + i];
-				if (i >= iter)
-					strname[i] = 0;
+					strname[i + 1] = 0;
 			}
 			//texFile = strname;
 			printf("(%d, %d, \"%s\");\n", reg, id, strname);
 
-			lv += 0x2 + iter; iter = 0; break;
+			lv += 0x3 + iter; iter = 0; break;
 		}
 		case 0x44:
 		{
@@ -1298,10 +1009,8 @@ void Decode()
 			}
 			for (int i = 0; i <= iter; i++)
 			{
-				if (i < iter)
 					strname[i] = buffer[lv + 1 + i];
-				if (i >= iter)
-					strname[i] = 0;
+					strname[i + 1] = 0;
 			}
 			//texFile = strname;
 			printf("(\"%s\");\n", strname);
@@ -1317,21 +1026,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-
-				printf("(Lab\_%d);\n", get_labid);
-			else
 				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; get_subid = 0; break;
 
@@ -1342,21 +1037,9 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
 
-
-			if (get_subid > sub_cnt)
-				printf("(%d, %d, Lab\_%d);\n", x, y, get_labid);
-			else
-				printf("( %d, %d, Sub%d);\n", x, y, get_subid);
+			printf("( %d, %d, Sub%d);\n", x, y, get_subid);
 			lv += 0x9; get_subid = 0; break;
 
 		case 0x52:
@@ -1365,20 +1048,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(Lab\_%d);\n", get_labid);
-			else
 				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
@@ -1399,20 +1069,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(Lab\_%d);\n", get_labid);
-			else
 				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
@@ -1422,20 +1079,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(Lab\_%d);\n", get_labid);
-			else
 				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
@@ -1486,20 +1130,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(%d, Lab\_%d);\n", chId, get_labid);
-			else
 				printf("(%d, Sub%d);\n", chId, get_subid);
 			lv += 0x6; break;
 
@@ -1510,20 +1141,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(%d, Lab\_%d);\n", chId, get_labid);
-			else
 				printf("(%d, Sub%d);\n", chId, get_subid);
 			lv += 0x6; break;
 
@@ -1567,20 +1185,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(%d, %d, %d, Lab\_%d);\n", x, y, param, get_labid);
-			else
 				printf("(%d, %d, %d, Sub%d);\n", x, y, param, get_subid);
 			lv += 0xc; break;
 
@@ -1670,20 +1275,7 @@ void Decode()
 			while (address != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-			if (get_subid > sub_cnt)
-				printf("(Lab\_%d);\n", get_labid);
-			else
 				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
@@ -1722,121 +1314,52 @@ void Decode()
 		case 0xc5:
 			//var = uChar(buffer[lv - 1]);
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-
-			if (get_subid > sub_cnt)
 				printf("(Lab\_%d)\n", get_labid);
-			else
-				printf("(Sub%d)\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc6:
 			//var = uChar(buffer[lv - 1]);
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-
-			if (get_subid > sub_cnt)
 				printf("(Lab\_%d)\n", get_labid);
-			else
-				printf("(Sub%d)\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xc7:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-
-			if (get_subid > sub_cnt)
 				printf("(Lab\_%d);\n", get_subid);
-			else
-				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xca:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-
-			if (get_subid > sub_cnt)
 			printf("(Lab\_%d);\n", get_labid);
-			else
-			printf("(Sub%d);\n", get_subid);
 			lv+= 0x5; break;
 
 		case 0xcb:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-			if (get_subid > sub_cnt)
 				printf("(Lab\_%d);\n", get_labid);
-			else
-				printf("(Sub%d);\n", get_subid);
 			lv+= 0x5; break;
 
 		case 0xcc:
 			printf("();\n\n");
-			if (lv < lSize - 1)
-			{
-				sub_id++;
-				printf("Sub Sub%d:\n\n", sub_id);
-			}
 			lv++; break;
 
 		case 0xcd:
@@ -1845,24 +1368,11 @@ void Decode()
 
 		case 0xce:
 			address = convCharInt(buffer[lv + 1], buffer[lv + 2], buffer[lv + 3], buffer[lv + 4]);
-			while (address != sub_add[get_subid])
+			while (address != lab_add[get_labid])
 			{
-				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
+				get_labid++;
 			}
-
-
-			if (get_subid > sub_cnt)
 				printf("(Lab\_%d);\n", get_labid);
-			else
-				printf("(Sub%d);\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xd0:
@@ -1943,7 +1453,7 @@ void Decode()
 			break;
 		}
 #ifdef CLB_DEBUG
-		//printf("buffer pos: 0x%x\n\n", lv);
+		printf("buffer pos: 0x%x\n\n", lv);
 #endif // CLB_DEBUG
 	}
 
@@ -1955,26 +1465,8 @@ void Decode()
 		while (header.SCL_lv1[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -1985,26 +1477,9 @@ void Decode()
 		while (header.SCL_lv2[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
 
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
 			printf("    Sub%d();\n", get_subid);
-		}
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2015,26 +1490,8 @@ void Decode()
 		while (header.SCL_lv3[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
 			printf("    Sub%d();\n", get_subid);
-		}
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2045,26 +1502,8 @@ void Decode()
 		while (header.SCL_lv4[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2076,26 +1515,8 @@ void Decode()
 		while (header.Lv1Attack[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
 			printf("    Sub%d();\n", get_subid);
-		}
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2106,26 +1527,8 @@ void Decode()
 		while (header.Lv2Attack[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
 			printf("    Sub%d();\n", get_subid);
-		}
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2136,26 +1539,8 @@ void Decode()
 		while (header.BossAttack[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2167,26 +1552,8 @@ void Decode()
 		while (header.AnmLv1[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
 			printf("    Sub%d();\n", get_subid);
-		}
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2197,26 +1564,8 @@ void Decode()
 		while (header.AnmLv2[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2227,26 +1576,8 @@ void Decode()
 		while (header.AnmBoss[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2257,26 +1588,8 @@ void Decode()
 		while (header.AnmWin[i] != sub_add[get_subid])
 		{
 			get_subid++;
-			if (get_subid > sub_cnt)
-			{
-				while (address != lab_add[get_labid])
-				{
-					get_labid++;
-				}
-				break;
-			}
 		}
-
-
-
-		if (get_subid > sub_cnt)
-		{
-			printf("    Lab\_%d;\n", get_labid);
-		}
-		else
-		{
-			printf("    Sub%d();\n", get_subid);
-		}
+		printf("    Sub%d();\n", get_subid);
 	}
 	printf("}\n\n");
 	get_subid = 0;
@@ -2289,26 +1602,8 @@ void Decode()
 			while (header.LTEntry[j].entryPoint[i] != sub_add[get_subid])
 			{
 				get_subid++;
-				if (get_subid > sub_cnt)
-				{
-					while (address != lab_add[get_labid])
-					{
-						get_labid++;
-					}
-					break;
-				}
 			}
-
-
-
-			if (get_subid > sub_cnt)
-			{
-				printf("    Lab\_%d;\n", get_labid);
-			}
-			else
-			{
-				printf("    Sub%d();\n", get_subid);
-			}
+			printf("    Sub%d();\n", get_subid);
 			get_subid = 0;
 			get_labid = 0;
 		}
