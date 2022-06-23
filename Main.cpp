@@ -630,9 +630,6 @@ void Decode()
 			}
 			lv += 0x6; break;
 
-		case 0x60:
-			lv += 0x2; break;
-
 		case 0x61:
 			lv += 0x5; break;
 
@@ -663,7 +660,7 @@ void Decode()
 					break;
 				}
 			}
-			lv += 0xc; break;
+			lv += 0xd; break;
 
 		case 0x66:
 			lv += 0x6;  break;
@@ -903,8 +900,18 @@ void Decode()
 
 			if (ins_nameLength[pos])
 			{
-				if (pos != 0xcc)
-				std::cout << "    ";
+				switch (pos)
+				{
+				case 0xcc:
+				case 0x53:
+					break;
+				default:
+					std::cout << "    ";
+					break;
+				}
+				//if (pos == 0xcc)
+				
+
 				std::cout << ins_name[pos];
 			}
 			else
@@ -1054,7 +1061,7 @@ void Decode()
 
 		case 0x53:
 			pop = buffer[lv + 1];
-			printf("(var%d);\n", pop);
+			printf("(var%d);\n\n", pop);
 			lv += 0x2; break;
 
 		case 0x54:
@@ -1149,7 +1156,7 @@ void Decode()
 
 			parId = uChar(buffer[lv - 1]);
 			printf("(%d);\n", parId);
-			lv += 0x2; break;
+			lv++; break;
 
 		case 0x61:
 			v0 = convCharInt(buffer[lv + 1], buffer[lv + 2]);
@@ -1187,7 +1194,7 @@ void Decode()
 				get_subid++;
 			}
 				printf("(%d, %d, %d, Sub%d);\n", x, y, param, get_subid);
-			lv += 0xc; break;
+			lv += 0xd; break;
 
 		case 0x66:
 			x = convCharInt(buffer[lv + 1], buffer[lv + 2]);
@@ -1292,7 +1299,7 @@ void Decode()
 		case 0xc1:
 			var = uChar(buffer[lv - 1]);
 			printf("(var%d);\n", var);
-			lv += 0x1; break;
+			lv++; break;
 
 		case 0xc2:
 			var = uChar(buffer[lv + 1]);
@@ -1449,11 +1456,34 @@ void Decode()
 
 		default:
 			if (lv < lSize - 1)
-				lv++;
+			{
+				lv++;	
+				//char get_cmd = buffer[lv], comp[4] = { 0xc0, 0xc1, 0x60, 0x40 };
+				////bool perm = get_cmd == comp[0] || get_cmd == comp[1] || get_cmd == comp[2] || get_cmd == comp[3];
+				////if (!perm)
+				////{
+				//
+				//switch (get_cmd)
+				//{
+				//case 0x40:
+				//case 0x60:
+				//case 0xc0:
+				//case 0xc1:
+				//	break;
+				//default:
+				//	printf("\nEspacio vacío\n");
+				//	printf("buffer pos: 0x%x\n\n", lv); break;
+				//}
+				//}
+			}
 			break;
 		}
 #ifdef CLB_DEBUG
-		printf("buffer pos: 0x%x\n\n", lv);
+		//printf("buffer pos: 0x%x\n\n", lv);
+		if (!isIns)
+		{
+			//printf("Espacio vacío\n");
+		}
 #endif // CLB_DEBUG
 	}
 
