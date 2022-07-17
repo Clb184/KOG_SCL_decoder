@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 #define MAXCHAR_KOG 10
 #define SCL_BUFFER 50
@@ -409,6 +411,7 @@ void Decode()
 
 	while (lv < lSize)
 	{
+		iter = 0;
 		switch (uChar(buffer[lv]))
 		{
 		case 0x30:
@@ -850,6 +853,21 @@ void Decode()
 		}
 	}
 
+	std::vector<int> sb_ord(sub_add, sub_add + (sizeof(sub_add) / sizeof(int)));
+	std::vector<int> lb_ord(lab_add, lab_add + (sizeof(lab_add) / sizeof(int)));
+
+	std::sort(sb_ord.begin(), sb_ord.begin() + sub_cnt);
+	std::sort(lb_ord.begin(), lb_ord.begin() + lab_cnt);
+
+	for (int it = 0; it < sub_cnt; it++)
+	{
+		sub_add[it] = sb_ord[it];
+	}
+	for (int it = 0; it < lab_cnt; it++)
+	{
+		lab_add[it] = lb_ord[it];
+	}
+
 	lv = getpos;
 	char instname[256];
 	char * getName;
@@ -873,7 +891,7 @@ void Decode()
 		{
 			if (lv == lab_add[lb])
 			{
-				printf("Lab%d:\n", lb);
+				printf("Lab_%d:\n", lb);
 				break;
 			}
 		}
@@ -1344,7 +1362,7 @@ void Decode()
 			{
 				get_labid++;
 			}
-				printf("(Lab\_%d);\n", get_subid);
+				printf("(Lab\_%d);\n", get_labid);
 			lv += 0x5; break;
 
 		case 0xca:
@@ -1458,23 +1476,6 @@ void Decode()
 			if (lv < lSize - 1)
 			{
 				lv++;	
-				//char get_cmd = buffer[lv], comp[4] = { 0xc0, 0xc1, 0x60, 0x40 };
-				////bool perm = get_cmd == comp[0] || get_cmd == comp[1] || get_cmd == comp[2] || get_cmd == comp[3];
-				////if (!perm)
-				////{
-				//
-				//switch (get_cmd)
-				//{
-				//case 0x40:
-				//case 0x60:
-				//case 0xc0:
-				//case 0xc1:
-				//	break;
-				//default:
-				//	printf("\nEspacio vacío\n");
-				//	printf("buffer pos: 0x%x\n\n", lv); break;
-				//}
-				//}
 			}
 			break;
 		}
