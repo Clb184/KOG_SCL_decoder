@@ -881,7 +881,7 @@ void Decode()
 		{
 			if (lv == sub_add[sb])
 			{
-				printf(".Sub%d:\n", sb);
+				printf("@Sub%d:\n", sb);
 				break;
 			}
 		}
@@ -889,7 +889,7 @@ void Decode()
 		{
 			if (lv == lab_add[lb])
 			{
-				printf("Lab_%d:\n", lb);
+				printf(".Lab_%d:\n", lb);
 				break;
 			}
 		}
@@ -930,7 +930,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-			printf("SET %d, %d, .Sub%d\n", x, y, get_subid);
+			printf("SET %d, %d, Sub%d\n", x, y, get_subid);
 			lv += 0x9; break;
 
 		case 0x40:
@@ -958,7 +958,7 @@ void Decode()
 			y1 = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
 			x2 = convCharUInt(buffer[lv + 6], buffer[lv + 7]);
 			y2 = convCharUInt(buffer[lv + 8], buffer[lv + 9]);
-			printf("RECT %d, %d, %d, %d\n", spid, x1, y1, x2 - x1, y2 - y1);
+			printf("RECT %d, %d, %d, %d, %d\n", spid, x1, y1, x2 - x1, y2 - y1);
 			lv += 0xA; break;
 		}
 		case 0x42:
@@ -1024,7 +1024,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("CALL .Sub%d\n", get_subid);
+				printf("CALL Sub%d\n", get_subid);
 			lv += 0x5; get_subid = 0; break;
 
 		case 0x51:
@@ -1036,7 +1036,7 @@ void Decode()
 				get_subid++;
 			}
 
-			printf("ATK %d, %d, .Sub%d\n", x, y, get_subid);
+			printf("ATK %d, %d, Sub%d\n", x, y, get_subid);
 			lv += 0x9; get_subid = 0; break;
 
 		case 0x52:
@@ -1046,7 +1046,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("ESET .Sub%d\n", get_subid);
+				printf("ESET Sub%d\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x53:
@@ -1067,7 +1067,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("FATK .Sub%d\n", get_subid);
+				printf("FATK Sub%d\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x56:
@@ -1077,7 +1077,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("ATKNP .Sub%d\n", get_subid);
+				printf("ATKNP Sub%d\n", get_subid);
 			lv += 0x5; break;
 
 		case 0x57:
@@ -1128,7 +1128,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("CHILD %d, .Sub%d\n", chId, get_subid);
+				printf("CHILD %d, Sub%d\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x5f:
@@ -1139,7 +1139,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("CHGTASK %d, .Sub%d\n", chId, get_subid);
+				printf("CHGTASK %d, Sub%d\n", chId, get_subid);
 			lv += 0x6; break;
 
 		case 0x60:
@@ -1183,7 +1183,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("ATK2 %d, %d, %d, .Sub%d\n", x, y, param, get_subid);
+				printf("ATK2 %d, %d, %d, Sub%d\n", x, y, param, get_subid);
 			lv += 0xd; break;
 
 		case 0x66:
@@ -1273,7 +1273,7 @@ void Decode()
 			{
 				get_subid++;
 			}
-				printf("TASK .Sub%d\n", get_subid);
+				printf("TASK Sub%d\n", get_subid);
 			lv += 0x5; break;
 
 		case 0xa1:
