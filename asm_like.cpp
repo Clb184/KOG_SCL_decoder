@@ -531,6 +531,22 @@ void Decode()
 			lv += 0x5; break;
 
 		case 0x53:
+			for (int i = 0; i < sub_cnt + 1; i++)
+			{
+				if (lv + 1 == sub_add[i])
+				{
+					break;
+				}
+				else if (sub_add[i] != 0x00000000)
+				{
+				}
+				else
+				{
+					sub_add[i] = lv + 2;
+					sub_cnt++;
+					break;
+				}
+			}
 			lv += 0x2; break;
 
 		case 0x54:
@@ -912,7 +928,7 @@ void Decode()
 			(pos >= 0xd0 && pos <= 0xe1));
 
 		if(isIns)
-			printf("    ");
+			printf("	");
 		//}
 
 		switch (uChar(buffer[lv]))
@@ -958,7 +974,7 @@ void Decode()
 			y1 = convCharUInt(buffer[lv + 4], buffer[lv + 5]);
 			x2 = convCharUInt(buffer[lv + 6], buffer[lv + 7]);
 			y2 = convCharUInt(buffer[lv + 8], buffer[lv + 9]);
-			printf("RECT %d, %d, %d, %d, %d\n", spid, x1, y1, x2 - x1, y2 - y1);
+			printf("RECT %d, %d, %d, %d, %d\n", spid, x1, y1, x2, y2);
 			lv += 0xA; break;
 		}
 		case 0x42:
